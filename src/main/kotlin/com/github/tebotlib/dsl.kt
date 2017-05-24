@@ -19,14 +19,14 @@ fun bot(apiKey: String, botName: String): Bot {
     }
 }
 
-fun properties(filePath: String) = properties(FileInputStream(filePath))
+fun props(filePath: String) = props(FileInputStream(filePath))
 
-fun properties(kClass: KClass<*>, filePath: String): Bot {
+fun props(kClass: KClass<*>, filePath: String): Bot {
     val resourceStream = kClass::java.get().getResourceAsStream(filePath)
-    return properties(resourceStream)
+    return props(resourceStream)
 }
 
-fun properties(resourceStream: InputStream): Bot {
+fun props(resourceStream: InputStream): Bot {
     val props = Properties()
     resourceStream.use {
         props.load(it)
