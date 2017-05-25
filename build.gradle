@@ -1,4 +1,5 @@
-
+group 'org.github.ivan-osipov'
+version '0.0.1-SNAPSHOT'
 
 buildscript {
     ext.kotlin_version = '1.1.2-2'
@@ -13,9 +14,24 @@ buildscript {
 apply plugin: 'kotlin'
 
 repositories {
+    jcenter()
     mavenCentral()
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile('com.github.kittinunf.fuel:fuel:1.7.0',
+            "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version",
+            'com.google.code.gson:gson:2.8.0')
+
+}
+
+compileKotlin {
+    sourceCompatibility = JavaVersion.VERSION_1_6
+    targetCompatibility = JavaVersion.VERSION_1_6
+
+    kotlinOptions {
+        jvmTarget = "1.6"
+        apiVersion = "1.1"
+        languageVersion = "1.1"
+    }
 }

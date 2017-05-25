@@ -8,14 +8,15 @@ import kotlin.reflect.KClass
 class Bot internal constructor(){
     lateinit var apiKey: String
     lateinit var botName: String
+
+    internal val telegramApiUrl: String by lazy { "https://api.telegram.org/bot$apiKey/" }
 }
 
 fun bot(bot: Bot) = bot
 
-fun bot(apiKey: String, botName: String): Bot {
+fun bot(apiKey: String): Bot {
     return Bot().apply {
         this.apiKey = apiKey
-        this.botName = botName
     }
 }
 
@@ -33,7 +34,11 @@ fun props(resourceStream: InputStream): Bot {
 
         return Bot().apply {
             this.apiKey = props["apiKey"] as String
-            this.botName = props["botName"] as String
         }
     }
 }
+
+infix fun Bot.url(method: String): String {
+    return this.telegramApiUrl + method
+}
+

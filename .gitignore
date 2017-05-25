@@ -1,3 +1,5 @@
 # Created by .ignore support plugin (hsz.mobi)
 .gradle/
 .idea/
+# /src/test/resources/examples/bot.properties
+build/
