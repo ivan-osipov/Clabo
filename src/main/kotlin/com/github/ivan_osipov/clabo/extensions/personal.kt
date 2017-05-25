@@ -2,10 +2,11 @@ package com.github.ivan_osipov.clabo.extensions
 
 import com.github.kittinunf.fuel.httpGet
 import com.github.ivan_osipov.clabo.Bot
+import com.github.ivan_osipov.clabo.dto.BotInfoDto
 import com.github.ivan_osipov.clabo.url
 
 infix fun Bot.personal(init: PersonalBotContext.() -> Unit) {
-    url("getMe").httpGet().responseObject(com.github.clabo.dto.BotInfoDto.Deserializer()) { _, _, result ->
+    url("getMe").httpGet().responseObject(BotInfoDto.Deserializer()) { _, _, result ->
 
         result.fold({ result ->
 
@@ -16,7 +17,10 @@ infix fun Bot.personal(init: PersonalBotContext.() -> Unit) {
             context.init()
 
         }) { error ->
-            println("Troubles with connecting ${error.message}")
+            println("Troubles with connecting ${error.response.httpStatusCode}.")
+            if(error.response.httpStatusCode == 404) {
+                println("Check api key")
+            }
         }
     }
 }

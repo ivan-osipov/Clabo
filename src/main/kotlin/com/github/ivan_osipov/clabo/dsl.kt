@@ -34,6 +34,7 @@ fun props(resourceStream: InputStream): Bot {
 
         return Bot().apply {
             this.apiKey = props["apiKey"] as String
+            check(this.apiKey.isNotEmpty(), { "Check api key" })
         }
     }
 }
