@@ -1,4 +1,4 @@
-package com.github.tebotlib
+package com.github.ivan_osipov.clabo
 
 import java.io.FileInputStream
 import java.io.InputStream

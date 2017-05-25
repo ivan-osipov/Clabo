@@ -1,6 +1,6 @@
-package com.github.tebotlib
+package com.github.ivan_osipov.clabo
 
-import com.github.tebotlib.auth.AuthContext
+import com.github.ivan_osipov.clabo.auth.AuthContext
 
 open class CommonBotContext(bot: Bot) : AuthContext {
 

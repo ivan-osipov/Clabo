@@ -1,4 +1,4 @@
-package com.github.tebotlib.model
+package com.github.ivan_osipov.clabo.model
 
 import kotlin.properties.Delegates
 

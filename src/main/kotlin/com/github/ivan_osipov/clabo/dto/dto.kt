@@ -1,7 +1,7 @@
-package com.github.tebotlib.dto
+package com.github.ivan_osipov.clabo.dto
 
 import com.github.kittinunf.fuel.core.ResponseDeserializable
-import com.github.tebotlib.model.BotInfo
+import com.github.ivan_osipov.clabo.model.BotInfo
 import com.google.gson.Gson
 
 open class ResponseDto<T: Any> {

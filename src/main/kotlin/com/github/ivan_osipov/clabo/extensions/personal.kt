@@ -1,12 +1,11 @@
-package com.github.tebotlib.extensions
+package com.github.ivan_osipov.clabo.extensions
 
 import com.github.kittinunf.fuel.httpGet
-import com.github.tebotlib.Bot
-import com.github.tebotlib.dto.BotInfoDto
-import com.github.tebotlib.url
+import com.github.ivan_osipov.clabo.Bot
+import com.github.ivan_osipov.clabo.url
 
 infix fun Bot.personal(init: PersonalBotContext.() -> Unit) {
-    url("getMe").httpGet().responseObject(BotInfoDto.Deserializer()) { _, _, result ->
+    url("getMe").httpGet().responseObject(com.github.clabo.dto.BotInfoDto.Deserializer()) { _, _, result ->
 
         result.fold({ result ->
 
