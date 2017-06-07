@@ -1,7 +1,8 @@
 package com.github.ivan_osipov.clabo.model
 
-import kotlin.properties.Delegates
+import com.google.gson.annotations.SerializedName
 
 open class Identifiable {
-    var id: Long by Delegates.notNull()
+    @SerializedName("id")
+    lateinit var id: String
 }

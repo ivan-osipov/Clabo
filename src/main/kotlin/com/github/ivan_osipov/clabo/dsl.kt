@@ -39,7 +39,7 @@ fun props(resourceStream: InputStream): Bot {
     }
 }
 
-infix fun Bot.url(method: String): String {
+infix fun Bot.method(method: String): String {
     return this.telegramApiUrl + method
 }
 
