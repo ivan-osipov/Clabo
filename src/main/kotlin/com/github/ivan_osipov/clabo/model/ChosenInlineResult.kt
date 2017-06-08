@@ -5,10 +5,10 @@ import com.google.gson.annotations.SerializedName
 /**
  * @see <a href="https://core.telegram.org/bots/api#choseninlineresult">docs</a>
  */
-class ChosenInlineResult {
+class ChosenInlineResult: Identifiable() {
 
     @SerializedName("result_id")
-    lateinit var resultId: String
+    override lateinit var id: String
 
     @SerializedName("from")
     lateinit var from: User

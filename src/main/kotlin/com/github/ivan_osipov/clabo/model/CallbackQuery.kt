@@ -5,9 +5,7 @@ import com.google.gson.annotations.SerializedName
 /**
  * @see <a href="https://core.telegram.org/bots/api#callbackquery">docs</a>
  */
-class CallbackQuery {
-    @SerializedName("id")
-    lateinit var id: String
+class CallbackQuery: Identifiable() {
 
     @SerializedName("from")
     lateinit var from: User

@@ -5,7 +5,10 @@ import com.google.gson.annotations.SerializedName
 /**
  * @see <a href="https://core.telegram.org/bots/api#contact">docs</a>
  */
-class Contact {
+class Contact: Identifiable() {
+    @SerializedName("user_id")
+    override lateinit var id: String
+
     @SerializedName("first_name")
     lateinit var firstName: String
 
@@ -14,7 +17,4 @@ class Contact {
 
     @SerializedName("last_name")
     var lastName: String? = null
-
-    @SerializedName("user_id")
-    var usedId: Int? = null
 }

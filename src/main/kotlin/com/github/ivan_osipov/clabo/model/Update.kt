@@ -1,16 +1,14 @@
 package com.github.ivan_osipov.clabo.model
 
 import com.google.gson.annotations.SerializedName
-import kotlin.properties.Delegates
 
 /**
  * @see <a href="https://core.telegram.org/bots/api#update">docs</a>
  */
-class Update {
+class Update: Identifiable() {
 
-    private var update_id: Long by Delegates.notNull()
-
-    val updateId: Long = update_id
+    @SerializedName("update_id")
+    override lateinit var id: String
 
     @SerializedName("message")
     var message: Message? = null
