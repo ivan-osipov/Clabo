@@ -13,7 +13,7 @@ class Chat: Identifiable() {
     private lateinit var _type: String
 
     @SerializedName("title")
-    var title: String = "undefined"
+    var title: String? = null
         get() {
             if(type.notOneOf(Type.SUPER_GROUP, Type.CHANNEL, Type.GROUP)) {
                 throw IncorrectApiUsage("Type ${type.name} does not support 'title'")
@@ -22,7 +22,7 @@ class Chat: Identifiable() {
         }
 
     @SerializedName("username")
-    var username: String = "undefined"
+    var username: String? = null
         get() {
             if(type.notOneOf(Type.SUPER_GROUP, Type.PRIVATE, Type.CHANNEL)) {
                 throw IncorrectApiUsage("Type ${type.name} does not support 'username'")
@@ -31,7 +31,7 @@ class Chat: Identifiable() {
         }
 
     @SerializedName("first_name")
-    var firstName: String = "undefined"
+    var firstName: String? = null
         get() {
             if(type != Type.PRIVATE) {
                 throw IncorrectApiUsage("Type ${type.name} does not support 'first_name'")
@@ -40,7 +40,7 @@ class Chat: Identifiable() {
         }
 
     @SerializedName("last_name")
-    var lastName: String = "undefined"
+    var lastName: String? = null
         get() {
             if(type != Type.PRIVATE) {
                 throw IncorrectApiUsage("Type ${type.name} does not support 'first_name'")

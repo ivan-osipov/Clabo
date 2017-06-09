@@ -41,7 +41,7 @@ class Message : Identifiable() {
     var text: String? = null
 
     @SerializedName("entities")
-    var entities: List<Any>? = null //todo MessageEntity
+    var entities: List<MessageEntity>? = null
 
     @SerializedName("audio")
     var audio: Any? = null //todo Audio
@@ -71,7 +71,7 @@ class Message : Identifiable() {
     var newChatMembers: List<User>? = null
 
     @SerializedName("caption")
-    var caption: String = "undefined"
+    var caption: String? = null
         get() {
             if(document == null && photo == null && video == null) {
                 throw IncorrectApiUsage("Caption is supported only for document/photo/video")
