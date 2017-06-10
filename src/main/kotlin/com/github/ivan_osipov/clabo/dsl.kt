@@ -1,5 +1,6 @@
 package com.github.ivan_osipov.clabo
 
+import com.github.ivan_osipov.clabo.internal.apiInteraction.TelegramApiInteraction
 import java.io.FileInputStream
 import java.io.InputStream
 import java.util.*
@@ -9,6 +10,7 @@ class Bot internal constructor(){
     lateinit var apiKey: String
     lateinit var botName: String
 
+    internal val api = TelegramApiInteraction(this)
     internal val telegramApiUrl: String by lazy { "https://api.telegram.org/bot$apiKey/" }
 }
 
@@ -37,9 +39,5 @@ fun props(resourceStream: InputStream): Bot {
             check(this.apiKey.isNotEmpty(), { "Check api key" })
         }
     }
-}
-
-infix fun Bot.method(method: String): String {
-    return this.telegramApiUrl + method
 }
 

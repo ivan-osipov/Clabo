@@ -16,7 +16,8 @@ class Message : Identifiable() {
     @SerializedName("date")
     private val _date: Long? = null
 
-    val date: Long = _date!!
+    val date: Long
+        get() = _date!!
 
     @SerializedName("chat")
     lateinit var chat: Chat

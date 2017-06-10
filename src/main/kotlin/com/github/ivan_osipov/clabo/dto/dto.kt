@@ -1,8 +1,11 @@
 package com.github.ivan_osipov.clabo.dto
 
-import com.github.kittinunf.fuel.core.ResponseDeserializable
+import com.github.ivan_osipov.clabo.deserialization.strategies.AnnotationExclusionStrategy
+import com.github.ivan_osipov.clabo.model.Update
 import com.github.ivan_osipov.clabo.model.User
+import com.github.kittinunf.fuel.core.ResponseDeserializable
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.google.gson.annotations.SerializedName
 
 open class ResponseDto<T: Any> {
@@ -21,8 +24,16 @@ class ResponseParameters {
     var retryAfter: Int? = null
 }
 
+internal val gson: Gson = GsonBuilder().setExclusionStrategies(AnnotationExclusionStrategy()).create()
+
 class UserDto : ResponseDto<User>() {
-    class Deserializer: ResponseDeserializable<UserDto> {
-        override fun deserialize(content: String) = Gson().fromJson(content, UserDto::class.java)!!
+    object deserializer : ResponseDeserializable<UserDto> {
+        override fun deserialize(content: String) = gson.fromJson(content, UserDto::class.java)!!
+    }
+}
+
+class UpdatesDto : ResponseDto<List<Update>>() {
+    object deserializer : ResponseDeserializable<UpdatesDto> {
+        override fun deserialize(content: String) = gson.fromJson(content, UpdatesDto::class.java)!!
     }
 }

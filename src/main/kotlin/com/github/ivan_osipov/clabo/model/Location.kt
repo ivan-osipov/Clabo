@@ -1,5 +1,6 @@
 package com.github.ivan_osipov.clabo.model
 
+import com.github.ivan_osipov.clabo.deserialization.annotations.Exclude
 import com.google.gson.annotations.SerializedName
 
 /**
@@ -13,8 +14,10 @@ class Location {
     @SerializedName("latitude")
     private var _latitude: Double? = null
 
-    val longitude: Double = _longitude!!
+    val longitude: Double
+        get() = _longitude!!
 
-    val latitude: Double = _latitude!!
+    val latitude: Double
+        get() = _latitude!!
 
 }

@@ -9,17 +9,20 @@ class MessageEntity {
     @SerializedName("type")
     private lateinit var _type: String
 
-    val type: Type = Type.valueOf(_type)
+    val type: Type
+        get() = Type.valueOf(_type)
 
     @SerializedName("offset")
     var _offset: Int? = null
 
-    val offset: Int = _offset!!
+    val offset: Int
+        get() = _offset!!
 
     @SerializedName("length")
     var _length: Int? = null
 
-    val length: Int = _length!!
+    val length: Int
+        get() = _length!!
 
     var url: String? = null
         get() {
