@@ -2,7 +2,6 @@ package com.github.ivan_osipov.clabo.model
 
 import com.github.ivan_osipov.clabo.exceptions.IncorrectApiUsage
 import com.google.gson.annotations.SerializedName
-import kotlin.properties.Delegates
 
 /**
  * @see <a href="https://core.telegram.org/bots/api#message">docs</a>
@@ -14,7 +13,10 @@ class Message : Identifiable() {
     @SerializedName("from")
     var from: User? = null
 
-    var date: Long by Delegates.notNull()
+    @SerializedName("date")
+    private val _date: Long? = null
+
+    val date: Long = _date!!
 
     @SerializedName("chat")
     lateinit var chat: Chat
@@ -53,7 +55,7 @@ class Message : Identifiable() {
     var game: Any? = null //todo Game
 
     @SerializedName("photo")
-    var photo: List<Any>? = null //todo PhotoSize
+    var photo: List<PhotoSize>? = null
 
     @SerializedName("sticker")
     var sticker: Any? = null //todo Sticker
@@ -98,7 +100,7 @@ class Message : Identifiable() {
     var newChatTitle: String? = null
 
     @SerializedName("new_chat_photo")
-    var newChatPhoto: List<Any>? = null //todo PhotoSize
+    var newChatPhoto: List<PhotoSize>? = null
 
     @SerializedName("delete_chat_photo")
     var deleteChatPhoto: Boolean = false

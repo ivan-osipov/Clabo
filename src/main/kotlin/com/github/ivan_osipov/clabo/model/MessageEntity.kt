@@ -3,7 +3,6 @@ package com.github.ivan_osipov.clabo.model
 import com.github.ivan_osipov.clabo.exceptions.IncorrectApiUsage
 import com.github.ivan_osipov.clabo.utils.notOneOf
 import com.google.gson.annotations.SerializedName
-import kotlin.properties.Delegates
 
 class MessageEntity {
 
@@ -12,9 +11,15 @@ class MessageEntity {
 
     val type: Type = Type.valueOf(_type)
 
-    var offset: Int by Delegates.notNull()
+    @SerializedName("offset")
+    var _offset: Int? = null
 
-    var length: Int by Delegates.notNull()
+    val offset: Int = _offset!!
+
+    @SerializedName("length")
+    var _length: Int? = null
+
+    val length: Int = _length!!
 
     var url: String? = null
         get() {

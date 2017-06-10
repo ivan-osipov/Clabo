@@ -1,7 +1,6 @@
 package com.github.ivan_osipov.clabo.model
 
 import com.google.gson.annotations.SerializedName
-import kotlin.properties.Delegates
 
 /**
  * @see <a href="https://core.telegram.org/bots/api#precheckoutquery">docs</a>
@@ -14,9 +13,10 @@ class PreCheckoutQuery : Identifiable() {
     @SerializedName("currency")
     lateinit var currency: String
 
-    var total_amount: Int by Delegates.notNull()
+    @SerializedName("total_amount")
+    private val _totalAmount: Int? = null
 
-    val totalAmount: Int = total_amount
+    val totalAmount: Int = _totalAmount!!
 
     @SerializedName("invoice_payload")
     lateinit var invoicePayload: String
