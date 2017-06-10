@@ -1,6 +1,8 @@
 package com.github.ivan_osipov.clabo
 
 import com.github.ivan_osipov.clabo.auth.AuthContext
+import com.github.ivan_osipov.clabo.model.Message
+import com.github.ivan_osipov.clabo.model.Update
 import com.github.ivan_osipov.clabo.settings.BotConfig
 import com.github.ivan_osipov.clabo.settings.UpdatesParams
 
@@ -21,8 +23,24 @@ open class CommonBotContext(val bot: Bot) : AuthContext {
         updatesParams.init()
     }
 
-    fun say(text: String) {
-        //todo send text
-        println(text)
+    fun onUpdates(init: (List<Update>) -> Unit) {
+        bot.api.getUpdates {
+            init(it)
+        }
     }
+
+    fun onUpdate(init: (Update) -> Unit) {
+        bot.api.getUpdates { updates ->
+            updates.forEach(init)
+        }
+    }
+
+    fun onMessage(init: (Message) -> Unit) {
+        bot.api.getUpdates { updates ->
+            updates.asSequence().map { it.message }.filterNotNull().forEach { message ->
+                init(message)
+            }
+        }
+    }
+
 }

@@ -1,6 +1,5 @@
 package examples
 
-import com.github.ivan_osipov.clabo.auth.extensions.askContact
 import com.github.ivan_osipov.clabo.bot
 import com.github.ivan_osipov.clabo.extensions.personal
 import com.github.ivan_osipov.clabo.props
@@ -16,18 +15,12 @@ fun main(args: Array<String>) {
             }
         }
 
-        onUpdate { update ->
-            println("New update")
-            update.message.let { message ->
-                println("New message with id " + message?.id)
-                println("Message sender: ${message?.from?.firstName ?: "undefined"}")
-                println("Text: " + (message?.text ?: "no text"))
-            }
-        }
+        onMessage { message ->
+            println("New message with id " + message.id)
+            println("Message sender: ${message.from?.firstName ?: "undefined"}")
+            println("Text: " + (message.text ?: "no text"))
 
-        askContact { contact ->
-            say("Nice to meet you ${contact.firstName}")
+            message answer "Hi! I received your message: ${message.text}"
         }
-
     }
 }

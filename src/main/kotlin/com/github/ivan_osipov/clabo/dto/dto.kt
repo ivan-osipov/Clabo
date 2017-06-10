@@ -1,6 +1,7 @@
 package com.github.ivan_osipov.clabo.dto
 
 import com.github.ivan_osipov.clabo.deserialization.strategies.AnnotationExclusionStrategy
+import com.github.ivan_osipov.clabo.model.Message
 import com.github.ivan_osipov.clabo.model.Update
 import com.github.ivan_osipov.clabo.model.User
 import com.github.kittinunf.fuel.core.ResponseDeserializable
@@ -35,5 +36,11 @@ class UserDto : ResponseDto<User>() {
 class UpdatesDto : ResponseDto<List<Update>>() {
     object deserializer : ResponseDeserializable<UpdatesDto> {
         override fun deserialize(content: String) = gson.fromJson(content, UpdatesDto::class.java)!!
+    }
+}
+
+class MessageDto : ResponseDto<Message>() {
+    object deserializer : ResponseDeserializable<MessageDto> {
+        override fun deserialize(content: String) = gson.fromJson(content, MessageDto::class.java)!!
     }
 }
