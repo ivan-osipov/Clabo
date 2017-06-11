@@ -1,3 +1,5 @@
 package com.github.ivan_osipov.clabo.auth
 
-interface AuthContext
+import com.github.ivan_osipov.clabo.model.Contact
+
+class AuthContext(val contact: Contact)

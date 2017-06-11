@@ -1,12 +1,13 @@
 package com.github.ivan_osipov.clabo
 
-import com.github.ivan_osipov.clabo.auth.AuthContext
+import com.github.ivan_osipov.clabo.internal.apiInteraction.SendParams
 import com.github.ivan_osipov.clabo.model.Message
 import com.github.ivan_osipov.clabo.model.Update
 import com.github.ivan_osipov.clabo.settings.BotConfig
 import com.github.ivan_osipov.clabo.settings.UpdatesParams
+import com.github.ivan_osipov.clabo.utils.Text
 
-open class CommonBotContext(val bot: Bot) : AuthContext {
+open class CommonBotContext(val bot: Bot) {
 
     init {
         check(bot.apiKey.isNotEmpty(), { "Api key is not defined" })
@@ -21,6 +22,13 @@ open class CommonBotContext(val bot: Bot) : AuthContext {
 
     fun BotConfig.updates(init: UpdatesParams.() -> Unit) {
         updatesParams.init()
+    }
+
+    fun BotConfig.helloMessage(text: Text, init: (SendParams) -> Unit = {}) {
+        val helloMessageSendParams = SendParams()
+        helloMessageSendParams.text = text
+        init(helloMessageSendParams)
+        this.helloMessage = helloMessageSendParams
     }
 
     fun onUpdates(init: (List<Update>) -> Unit) {
