@@ -10,17 +10,34 @@ fun main(args: Array<String>) {
     bot(props(SimpleUsing::class, "bot.properties")) personal {
 
         configure {
+            helloMessage("Hello! I'm Bot")
             updates {
-                timeout = 10000
+                timeout = 3000
             }
         }
 
-        onMessage { message ->
-            println("New message with id " + message.id)
-            println("Message sender: ${message.from?.firstName ?: "undefined"}")
-            println("Text: " + (message.text ?: "no text"))
+        commands {
+            register("share_price") {
+                it.update.message answer "No!"
+            }
+            registerForUnknown {
+                it.update.message answer "Unknown command"
+            }
+        }
 
-            message answer "Hi! I received your message: ${message.text}"
+        onStart {
+            println("Start with ${it.update.message?.from?.username}")
+            it.update.message answer "I'm starting"
+        }
+
+        onHelp {
+            println("Help with ${it.update.message?.from?.username}")
+            it.update.message answer "I cannot help you"
+        }
+
+        onSettings {
+            println("Settings with ${it.update.message?.from?.username}")
+            it.update.message answer "I don't have settings"
         }
     }
 }

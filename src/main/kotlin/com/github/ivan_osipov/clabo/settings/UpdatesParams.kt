@@ -1,6 +1,6 @@
 package com.github.ivan_osipov.clabo.settings
 
-class UpdatesParams(var offset: Long? = null,
+data class UpdatesParams(var offset: Long? = null,
                     var limit: Short? = null,
                     var timeout: Long? = null,
                     var allowedUpdates: List<String>? = null) {

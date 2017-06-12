@@ -14,9 +14,13 @@ class PersonalBotContext(bot: Bot) : CommonBotContext(bot) {
         bot.api.sendMessage(sendParams)
     }
 
-    infix fun Message.answer(text: Text) {
-        val sendParams = SendParams(this.chat.id, text)
-        bot.api.sendMessage(sendParams)
+    infix fun Message?.answer(text: Text) {
+        if(this == null) {
+            logger.warn("Trying answer but message is undefined")
+        } else {
+            val sendParams = SendParams(this.chat.id, text)
+            bot.api.sendMessage(sendParams)
+        }
     }
 
 }
