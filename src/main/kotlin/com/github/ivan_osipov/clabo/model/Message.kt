@@ -47,10 +47,10 @@ class Message : Identifiable() {
     var entities: List<MessageEntity>? = null
 
     @SerializedName("audio")
-    var audio: Any? = null //todo Audio
+    var audio: Audio? = null
 
     @SerializedName("document")
-    var document: Any? = null //todo Document
+    var document: Document? = null
 
     @SerializedName("game")
     var game: Any? = null //todo Game
@@ -59,16 +59,16 @@ class Message : Identifiable() {
     var photo: List<PhotoSize>? = null
 
     @SerializedName("sticker")
-    var sticker: Any? = null //todo Sticker
+    var sticker: Sticker? = null
 
     @SerializedName("video")
-    var video: Any? = null //todo Video
+    var video: Video? = null
 
     @SerializedName("voice")
-    var voice: Any? = null //todo Voice
+    var voice: Voice? = null
 
     @SerializedName("video_note")
-    var videoNote: Any? = null //todo VideoNote
+    var videoNote: VideoNote? = null
 
     @SerializedName("new_chat_members")
     var newChatMembers: List<User>? = null
@@ -89,7 +89,7 @@ class Message : Identifiable() {
     var location: Location? = null
 
     @SerializedName("venue")
-    var venue: Any? = null //todo Venue
+    var venue: Venue? = null
 
     @SerializedName("new_chat_member")
     var newChatMember: User? = null
