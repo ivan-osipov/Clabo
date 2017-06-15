@@ -1,5 +1,8 @@
-package com.github.ivan_osipov.clabo.model
+package com.github.ivan_osipov.clabo.model.inline_mode
 
+import com.github.ivan_osipov.clabo.model.Identifiable
+import com.github.ivan_osipov.clabo.model.Location
+import com.github.ivan_osipov.clabo.model.User
 import com.google.gson.annotations.SerializedName
 
 /**
