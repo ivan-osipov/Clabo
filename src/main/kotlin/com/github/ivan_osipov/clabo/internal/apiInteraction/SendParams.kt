@@ -1,6 +1,8 @@
 package com.github.ivan_osipov.clabo.internal.apiInteraction
 
+import com.github.ivan_osipov.clabo.model.ParseMode
 import com.github.ivan_osipov.clabo.model.sending.ReplyMarkup
+import com.google.gson.annotations.SerializedName
 
 class SendParams() {
 
@@ -18,7 +20,18 @@ class SendParams() {
             chatId = value.toString()
         }
     lateinit var text: String
-    var parseMode: ParseMode = ParseMode.NONE
+
+    @SerializedName("parse_mode")
+    private var _parseMode: String? = null
+
+    var parseMode: ParseMode
+        get() {
+            val parseModeCopy = _parseMode
+            return if(parseModeCopy == null) ParseMode.NONE else ParseMode.valueOf(parseModeCopy)
+        }
+        set(value) { _parseMode = value.content }
+
+
     var disableWebPagePreview: Boolean = false
     var disableNotification: Boolean = false
     var replyToMessageId: String? = null
@@ -31,7 +44,7 @@ class SendParams() {
     fun toListOfPairs(): List<Pair<String, *>> {
         return listOf("chat_id" to chatId,
                 "text" to text,
-                "parse_mode" to parseMode.name,
+                "parse_mode" to _parseMode,
                 "disable_web_page_preview" to disableWebPagePreview,
                 "disable_notification" to disableNotification,
                 "reply_to_message_id" to replyToMessageId,

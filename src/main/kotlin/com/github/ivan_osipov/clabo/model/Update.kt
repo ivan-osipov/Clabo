@@ -1,5 +1,6 @@
 package com.github.ivan_osipov.clabo.model
 
+import com.github.ivan_osipov.clabo.model.inline_mode.InlineQuery
 import com.google.gson.annotations.SerializedName
 
 /**
