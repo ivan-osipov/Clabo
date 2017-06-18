@@ -7,9 +7,11 @@ import org.slf4j.LoggerFactory
 
 class CommandsContext(val botName: String) {
 
-    private val UNKNOWN_COMMAND_KEY = ""
+    private val unknownCommandBehaviours: MutableList<(Command) -> Unit> = ArrayList()
     private val commandMap: ListMultimap<String, (Command) -> Unit> = ArrayListMultimap.create()
     private val logger: Logger = LoggerFactory.getLogger(CommandsContext::class.java)
+    val commandList: Set<String>
+        get() = commandMap.keySet()
 
     fun register(command: String, commandProcessor: (Command) -> Unit) {
         commandMap.put(command, commandProcessor)
@@ -18,13 +20,13 @@ class CommandsContext(val botName: String) {
     }
 
     fun registerForUnknown(commandProcessor: (Command) -> Unit) {
-        register(UNKNOWN_COMMAND_KEY, commandProcessor)
+        unknownCommandBehaviours.add(commandProcessor)
     }
 
     operator fun get(command: String): List<(Command) -> Unit> {
         val behavioursForCommand = ArrayList(commandMap.get(command))
         if(behavioursForCommand.isEmpty()) {
-            behavioursForCommand.addAll(commandMap.get(UNKNOWN_COMMAND_KEY))
+            behavioursForCommand.addAll(unknownCommandBehaviours)
         }
         return behavioursForCommand
     }

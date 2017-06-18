@@ -2,7 +2,7 @@ package com.github.ivan_osipov.clabo.settings
 
 data class UpdatesParams(var offset: Long? = null,
                     var limit: Short? = null,
-                    var timeout: Long? = null,
+                    var timeout: Long = 60000,
                     var allowedUpdates: List<String>? = null) {
 
     fun toListOfPairs() : List<Pair<String,*>> {
