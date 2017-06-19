@@ -84,6 +84,9 @@ internal class TelegramApiInteraction(val bot: Bot) {
             if (error.response.httpStatusCode == 404) {
                 logger.error("Check api key")
             }
+            if (error.response.httpStatusCode == 409) {
+                logger.error("Bot can be already started")
+            }
         }
         logger.error("Problem with request", error.exception)
     }
