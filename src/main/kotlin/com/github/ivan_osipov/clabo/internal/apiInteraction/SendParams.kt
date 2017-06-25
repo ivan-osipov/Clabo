@@ -1,7 +1,8 @@
 package com.github.ivan_osipov.clabo.internal.apiInteraction
 
+import com.github.ivan_osipov.clabo.dto.toJson
 import com.github.ivan_osipov.clabo.model.ParseMode
-import com.github.ivan_osipov.clabo.model.sending.ReplyMarkup
+import com.github.ivan_osipov.clabo.model.ReplyMarkup
 import com.google.gson.annotations.SerializedName
 
 class SendParams() {
@@ -48,6 +49,6 @@ class SendParams() {
                 "disable_web_page_preview" to disableWebPagePreview,
                 "disable_notification" to disableNotification,
                 "reply_to_message_id" to replyToMessageId,
-                "reply_markup" to replyMarkup)
+                "reply_markup" to replyMarkup.toJson())
     }
 }

@@ -1,10 +1,7 @@
 package com.github.ivan_osipov.clabo.internal.apiInteraction
 
 import com.github.ivan_osipov.clabo.Bot
-import com.github.ivan_osipov.clabo.dto.MessageDto
-import com.github.ivan_osipov.clabo.dto.ResponseDto
-import com.github.ivan_osipov.clabo.dto.UpdatesDto
-import com.github.ivan_osipov.clabo.dto.UserDto
+import com.github.ivan_osipov.clabo.dto.*
 import com.github.ivan_osipov.clabo.model.Update
 import com.github.ivan_osipov.clabo.model.User
 import com.github.ivan_osipov.clabo.settings.UpdatesParams
@@ -89,6 +86,7 @@ internal class TelegramApiInteraction(val bot: Bot) {
             }
         }
         logger.error("Problem with request", error.exception)
+        logger.error(String(error.errorData));
     }
 
     private fun method(method: String): String {

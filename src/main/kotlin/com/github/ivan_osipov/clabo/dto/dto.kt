@@ -44,3 +44,5 @@ class MessageDto : ResponseDto<Message>() {
         override fun deserialize(content: String) = gson.fromJson(content, MessageDto::class.java)!!
     }
 }
+
+fun <T: Any> T?.toJson(): String? = this?.let { gson.toJson(this) }

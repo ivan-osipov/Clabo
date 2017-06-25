@@ -13,7 +13,7 @@ class AnswerInlineQuery : Identifiable() {
     var results: List<InlineQueryResult> = ArrayList()
 
     @SerializedName("cache_time")
-    var cacheTime: Int? = null
+    var cacheTime: Long? = null
 
     @SerializedName("is_personal")
     var isPersonal: Boolean = false
