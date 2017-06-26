@@ -1,7 +1,7 @@
 package com.github.ivan_osipov.clabo.model.inline_mode.results
 
 import com.github.ivan_osipov.clabo.model.Identifiable
-import com.github.ivan_osipov.clabo.model.sending.InlineKeyboardMarkup
+import com.github.ivan_osipov.clabo.model.InlineKeyboardMarkup
 import com.google.gson.annotations.SerializedName
 
 open class InlineQueryResult : Identifiable() {

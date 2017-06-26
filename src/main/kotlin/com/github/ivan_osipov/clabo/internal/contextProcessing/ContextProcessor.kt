@@ -17,6 +17,7 @@ class ContextProcessor(val commonBotContext: CommonBotContext) {
         val bot = commonBotContext.bot
         val api = bot.api
         val commandsContext = commonBotContext.commandsContext
+        val inlineModeContext = commonBotContext.inlineModeContext
 
         val lock: Semaphore = Semaphore(0)
 
@@ -27,16 +28,21 @@ class ContextProcessor(val commonBotContext: CommonBotContext) {
 
                 api.getUpdates(updateParams, { updates ->
                     val commands = ArrayList<Command>()
+                    val inlineQueryUpdates = ArrayList<Update>()
 
                     //collecting
                     for (update in updates) {
+                        refreshLastUpdate(update)
+
                         val message = update.message
                         if (message != null) {
-                            updateLastUpdateIdForChat(update)
-
                             if (message.text.isCommand()) {
                                 commands.add(buildCommand(update))
                             }
+                        }
+                        val inlineQuery = update.inlineQuery
+                        if(inlineQuery != null) {
+                            inlineQueryUpdates.add(update)
                         }
                     }
 
@@ -45,6 +51,11 @@ class ContextProcessor(val commonBotContext: CommonBotContext) {
                         val behavioursForCommand = commandsContext[command.name]
                         for (behaviour in behavioursForCommand) {
                             behaviour(command)
+                        }
+                    }
+                    for (inlineQueryUpdate in inlineQueryUpdates) {
+                        inlineModeContext.inlineQueryCallbacks.forEach { callback ->
+                            callback(inlineQueryUpdate.inlineQuery!!, inlineQueryUpdate)
                         }
                     }
 
@@ -63,14 +74,14 @@ class ContextProcessor(val commonBotContext: CommonBotContext) {
         }
     }
 
-    private fun updateLastUpdateIdForChat(update: Update) {
+    private fun refreshLastUpdate(update: Update) {
         lastUpdateId = Math.max(lastUpdateId, update.id.toLong() + 1)
     }
 
     private fun buildCommand(update: Update): Command {
         val text = update.message!!.text!!
         val parts: List<String> = text.split(" ")
-        var name: String = parts[0]
+        var name: String = parts[0].toLowerCase()
         val parameter: String? = if (parts.size > 1) parts[1] else null
         name = name.substring(1)
         val commandObj = Command(name, parameter, update)
