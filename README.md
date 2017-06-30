@@ -17,7 +17,7 @@ Clabo is developed by [Ivan Osipov](https://github.com/ivan-osipov) as free and 
 There are many features which should be supported. If you have ideas about better DSL, please, feel free to create an 
 issue with a description of your thought and it will be discussed. If you have some code with a new part of DSL, 
 good changes in internal code or fixes for docs, please, feel free to do pull request.
-More information about contribution you can find in [contribution guidelines for this project](CONTRIBUTING.md)
+More information about contribution you can find in [contribution guidelines for this project](https://github.com/ivan-osipov/Clabo/blob/master/CONTRIBUTING.md)
 
 ## Kotlin and Java
 Kotlin give us ability for making projects which will be started on JRE 6. Sometimes there are limitations 
@@ -25,7 +25,7 @@ for launching applications in JRE 8 in production. This project is compiled for 
 
 ## Code Of Conduct
 Openness for the dialog opens door for contribution to this project.
-More information about code of conduct you can find [here](CODE_OF_CONDUCT.md).
+More information about code of conduct you can find [here](https://github.com/ivan-osipov/Clabo/blob/master/CODE_OF_CONDUCT.md).
 
 ## License
 Clabo is Open Source which is licensed under the Apache Licenses, version 2.0. It can be freely used in commercial 
@@ -35,10 +35,10 @@ projects.
 In this project there is usage of the next libraries:
 #### Directly in library
 - [Fuel 1.7.0](https://github.com/kittinunf/Fuel) - The easiest HTTP networking library for Kotlin/Android 
-( MIT License )
+(MIT License)
 - [Gson 2.8.0](https://github.com/google/gson) - A Java serialization/deserialization library to convert Java Objects 
-into JSON and back ( Apache 2.0 License )
-- [Slf4j-Api 1.7.25](https://www.slf4j.org) - The Simple Logging Facade for Java ( MIT License )
-- [Guava 22.0](https://github.com/google/guava) - Google Core Libraries for Java ( Apache 2.0 License )  
+into JSON and back (Apache 2.0 License)
+- [Slf4j-Api 1.7.25](https://www.slf4j.org) - The Simple Logging Facade for Java (MIT License)
+- [Guava 22.0](https://github.com/google/guava) - Google Core Libraries for Java (Apache 2.0 License)  
 #### In test runtime
-- [Logback 1.2.3](https://logback.qos.ch) - Logging ( Eclipse Public License v1.0 )
+- [Logback 1.2.3](https://logback.qos.ch) - Logging (Eclipse Public License v1.0)
