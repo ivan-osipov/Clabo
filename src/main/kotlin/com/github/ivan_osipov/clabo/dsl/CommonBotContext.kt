@@ -1,19 +1,20 @@
 package com.github.ivan_osipov.clabo.dsl
 
-import com.github.ivan_osipov.clabo.state.chat.StaticChatContext
-import com.github.ivan_osipov.clabo.dsl.perks.command.Command
-import com.github.ivan_osipov.clabo.dsl.perks.command.CommandsContext
-import com.github.ivan_osipov.clabo.dsl.perks.inline.InlineModeContext
-import com.github.ivan_osipov.clabo.api.output.dto.SendParams
 import com.github.ivan_osipov.clabo.api.model.KeyboardButton
 import com.github.ivan_osipov.clabo.api.model.Message
 import com.github.ivan_osipov.clabo.api.model.ReplyKeyboardMarkup
 import com.github.ivan_osipov.clabo.api.model.Update
+import com.github.ivan_osipov.clabo.api.output.dto.SendParams
 import com.github.ivan_osipov.clabo.dsl.config.BotConfigContext
+import com.github.ivan_osipov.clabo.dsl.perks.command.Command
+import com.github.ivan_osipov.clabo.dsl.perks.command.CommandsContext
+import com.github.ivan_osipov.clabo.dsl.perks.inline.InlineModeContext
+import com.github.ivan_osipov.clabo.state.chat.ChatContext
+import com.github.ivan_osipov.clabo.state.chat.ChatInteractionContext
+import com.github.ivan_osipov.clabo.state.chat.ChatStateStore
 import com.github.ivan_osipov.clabo.utils.ChatId
 import com.github.ivan_osipov.clabo.utils.Text
 import com.google.common.base.Joiner
-import com.google.common.collect.HashMultimap
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -23,15 +24,20 @@ open class CommonBotContext(val bot: Bot) {
 
     var namedCallbacks = HashMap<String, (Update) -> Unit>()
 
-    var chatContextCallbacks = HashMultimap.create<StaticChatContext, (Message)->Unit>()
-
     var inlineModeContext = InlineModeContext()
+
+    var chatInteractionContext: ChatInteractionContext<*,*>? = null
 
     protected val logger: Logger = LoggerFactory.getLogger(CommonBotContext::class.java)
 
     init {
         check(bot.apiKey.isNotEmpty(), { "Api key is not defined" })
         check(bot.botName.isNotEmpty(), { "Bot name is not loaded (check api key)" })
+    }
+
+    fun <T: ChatStateStore<C>, C: ChatContext> chatting(chatStateStore: T,
+                                                        init: ChatInteractionContext<T, C>.() -> Unit) {
+        chatInteractionContext = ChatInteractionContext(chatStateStore).apply { init() }
     }
 
     fun configure(init: BotConfigContext.() -> Unit) {
@@ -83,12 +89,6 @@ open class CommonBotContext(val bot: Bot) {
     fun inlineMode(init: InlineModeContext.() -> Unit) {
         logger.info("You have to set inline mode trough @BotFather for providing inline mode")
         inlineModeContext.init()
-    }
-
-    fun <T : StaticChatContext> inChat(context: T, callback: T.(Message) -> Unit) {
-        chatContextCallbacks.put(context, { update ->
-            context.callback(update)
-        })
     }
 
     fun say(text: Text, chatId: ChatId) {
