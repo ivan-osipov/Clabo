@@ -54,7 +54,7 @@ internal class ContextProcessor(val commonBotContext: CommonBotContext) {
                                 val chatContext: ChatContext? = chatStateStore?.getChatContext(message.chat.id)
                                 chatContext?.let {
                                     val messagesProcessors: Collection<(Message, Update) -> Unit>  = chatContext
-                                            .likeMessages.get(message.text)
+                                            .likeCallbacks.get(message.text)
                                     chatContextProcessors.putAll(update, messagesProcessors)
                                 }
                             }

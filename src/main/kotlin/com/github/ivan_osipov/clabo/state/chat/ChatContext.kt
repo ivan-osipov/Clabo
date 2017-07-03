@@ -7,11 +7,18 @@ import com.google.common.collect.Multimap
 
 open class ChatContext {
 
-    val likeMessages: Multimap<String, (Message, Update) -> Unit> = ArrayListMultimap.create()
+    val likeCallbacks: Multimap<String, (Message, Update) -> Unit> = ArrayListMultimap.create()
+    val predicateCallbacks: Multimap<(Message) -> Boolean, (Message, Update) -> Unit> = ArrayListMultimap.create()
 
     fun onOneOfMessages(vararg messages: String, callback: (Message, Update) -> Unit) {
         for (message in messages) {
-            likeMessages.put(message.toLowerCase(), callback)
+            likeCallbacks.put(message.toLowerCase(), callback)
+        }
+    }
+
+    fun onOneOfMessages(vararg predicates: (Message) -> Boolean, callback: (Message, Update) -> Unit) {
+        for (predicate in predicates) {
+            predicateCallbacks.put(predicate, callback)
         }
     }
 
