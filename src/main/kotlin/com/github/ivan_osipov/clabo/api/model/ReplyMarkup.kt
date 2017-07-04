@@ -20,6 +20,14 @@ class ReplyKeyboardMarkup : ReplyMarkup() {
     var selective: Boolean = false
 }
 
-class ReplyKeyboardRemove : ReplyMarkup()
+class ReplyKeyboardRemove : ReplyMarkup() {
+
+    @SerializedName("remove_keyboard")
+    val removeKeyboard: Boolean = true
+
+    @SerializedName("selective")
+    var selective: Boolean = false
+
+}
 
 class ForceReply : ReplyMarkup()

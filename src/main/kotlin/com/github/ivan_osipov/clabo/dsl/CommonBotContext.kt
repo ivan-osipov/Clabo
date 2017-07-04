@@ -1,9 +1,6 @@
 package com.github.ivan_osipov.clabo.dsl
 
-import com.github.ivan_osipov.clabo.api.model.KeyboardButton
-import com.github.ivan_osipov.clabo.api.model.Message
-import com.github.ivan_osipov.clabo.api.model.ReplyKeyboardMarkup
-import com.github.ivan_osipov.clabo.api.model.Update
+import com.github.ivan_osipov.clabo.api.model.*
 import com.github.ivan_osipov.clabo.api.output.dto.SendParams
 import com.github.ivan_osipov.clabo.dsl.config.BotConfigContext
 import com.github.ivan_osipov.clabo.dsl.perks.command.Command
@@ -111,6 +108,12 @@ open class CommonBotContext(val bot: Bot) {
     fun SendParams.replyKeyboard(init: ReplyKeyboardMarkup.() -> Unit) {
         replyMarkup = ReplyKeyboardMarkup().apply {
             init()
+        }
+    }
+
+    fun SendParams.replyKeyboardRemove(selective: Boolean = false) {
+        replyMarkup = ReplyKeyboardRemove().apply {
+            this.selective = selective
         }
     }
 

@@ -22,66 +22,20 @@ internal class ContextProcessor(val commonBotContext: CommonBotContext) {
     fun run() {
         val bot = commonBotContext.bot
         val api = bot.api
-        val commandsContext = commonBotContext.commandsContext
-        val inlineModeContext = commonBotContext.inlineModeContext
-        val chatInteractionContext = commonBotContext.chatInteractionContext
-        var chatStateStore: ChatStateStore<*>? = null
-        chatInteractionContext?.let {
-            chatStateStore = it.chatStateStore
-        }
 
         val lock: Semaphore = Semaphore(0)
 
         while (true) {
             try {
                 val updateParams = api.defaultUpdatesParams.copy()
+
                 updateParams.offset = lastUpdateId
 
                 api.getUpdates(updateParams, { updates ->
-                    val commands = ArrayList<Command>()
-                    val inlineQueryUpdates = ArrayList<Update>()
-                    val chatContextProcessors: Multimap<Update, (Message, Update) -> Unit> = ArrayListMultimap.create()
 
-                    //collecting
-                    for (update in updates) {
-                        refreshLastUpdate(update)
+                    val executionBatch = collectExecutionBatch(updates)
 
-                        val message = update.message
-                        if (message != null) {
-                            if (message.text.isCommand()) {
-                                commands.add(buildCommand(update))
-                            } else {
-                                val chatContext: ChatContext? = chatStateStore?.getChatContext(message.chat.id)
-                                chatContext?.let {
-                                    val messagesProcessors: Collection<(Message, Update) -> Unit>  = chatContext
-                                            .likeCallbacks.get(message.text)
-                                    chatContextProcessors.putAll(update, messagesProcessors)
-                                }
-                            }
-                        }
-                        val inlineQuery = update.inlineQuery
-                        if (inlineQuery != null) {
-                            inlineQueryUpdates.add(update)
-                        }
-                    }
-
-                    //processing
-                    for (command in commands) {
-                        val behavioursForCommand = commandsContext[command.name]
-                        for (behaviour in behavioursForCommand) {
-                            behaviour(command)
-                        }
-                    }
-                    for (inlineQueryUpdate in inlineQueryUpdates) {
-                        inlineModeContext.inlineQueryCallbacks.forEach { callback ->
-                            callback(inlineQueryUpdate.inlineQuery!!, inlineQueryUpdate)
-                        }
-                    }
-                    for ((update, processors) in chatContextProcessors.asMap()) {
-                        for (processor in processors) {
-                            processor(update.message!!, update)
-                        }
-                    }
+                    processExecutionBatch(executionBatch)
 
                     lock.release()
                 }, {
@@ -95,6 +49,76 @@ internal class ContextProcessor(val commonBotContext: CommonBotContext) {
             } finally {
                 Thread.sleep(1)
             }
+        }
+    }
+
+    private fun collectExecutionBatch(updates: List<Update>): ExecutionBatch {
+        val commandsContext = commonBotContext.commandsContext
+        val inlineModeContext = commonBotContext.inlineModeContext
+        val chatInteractionContext = commonBotContext.chatInteractionContext
+        var chatStateStore: ChatStateStore<*>? = null
+        chatInteractionContext?.let {
+            chatStateStore = it.chatStateStore
+        }
+
+        val executionBatch = ExecutionBatch()
+        for (update in updates) {
+            refreshLastUpdate(update)
+
+            val message = update.message
+            if (message != null) {
+                if (message.text.isCommand()) {
+
+                    val command = buildCommand(update)
+                    val behavioursForCommand = commandsContext[command.name]
+
+                    executionBatch.callbacks.add {
+                        for (behaviour in behavioursForCommand) {
+                            behaviour(command)
+                        }
+                    }
+
+                } else {
+                    val chatContext: ChatContext? = chatStateStore?.getChatContext(message.chat.id)
+                    chatContext?.let {
+                        val messagesProcessors: Collection<(Message, Update) -> Unit> = chatContext
+                                .likeCallbacks.get(message.text?.toLowerCase())
+                        val predicateCallbacks = chatContext.predicateCallbacks.asMap()
+
+                        for (messagesProcessor in messagesProcessors) {
+                            executionBatch.callbacks.add {
+                                messagesProcessor(message, update)
+                            }
+                        }
+
+                        predicateCallbacks.entries.forEach { entry ->
+                            val predicate = entry.key
+                            if (predicate(message)) {
+                                executionBatch.callbacks.add {
+                                    for (callback in entry.value) {
+                                        callback(message, update)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            val inlineQuery = update.inlineQuery
+            if (inlineQuery != null) {
+                inlineModeContext.inlineQueryCallbacks.forEach { callback ->
+                    executionBatch.callbacks.add {
+                        callback(inlineQuery, update)
+                    }
+                }
+            }
+        }
+        return executionBatch
+    }
+
+    private fun processExecutionBatch(executionBatch: ExecutionBatch) {
+        for (callback in executionBatch.callbacks) {
+            callback()
         }
     }
 
