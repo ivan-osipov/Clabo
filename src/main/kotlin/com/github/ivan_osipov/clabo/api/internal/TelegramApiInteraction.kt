@@ -5,6 +5,7 @@ import com.github.ivan_osipov.clabo.api.input.MessageDto
 import com.github.ivan_osipov.clabo.api.input.ResponseDto
 import com.github.ivan_osipov.clabo.api.input.UpdatesDto
 import com.github.ivan_osipov.clabo.api.input.UserDto
+import com.github.ivan_osipov.clabo.api.model.Message
 import com.github.ivan_osipov.clabo.api.model.Update
 import com.github.ivan_osipov.clabo.api.model.User
 import com.github.ivan_osipov.clabo.api.output.dto.SendParams
@@ -13,7 +14,6 @@ import com.github.kittinunf.fuel.core.FuelError
 import com.github.kittinunf.fuel.core.ResponseDeserializable
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPost
-import com.google.common.collect.Queues
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.SocketTimeoutException
@@ -21,6 +21,7 @@ import java.net.SocketTimeoutException
 internal class TelegramApiInteraction(val bot: Bot) {
 
     var defaultUpdatesParams = UpdatesParams()
+
     private val logger: Logger = LoggerFactory.getLogger(TelegramApiInteraction::class.java)
 
     companion object {
@@ -39,6 +40,10 @@ internal class TelegramApiInteraction(val bot: Bot) {
 
     fun sendMessage(sendParams: SendParams) {
         invokePostMethod(SEND_MESSAGE, sendParams.toListOfPairs(), MessageDto.deserializer)
+    }
+
+    fun sendMessage(sendParams: SendParams, callback: (Message) -> Unit, errorCallback: (Exception) -> Unit) {
+        invokePostMethod(SEND_MESSAGE, sendParams.toListOfPairs(), MessageDto.deserializer, callback, errorCallback)
     }
 
     private fun <T: Any> invokeGetMethod(method: String,
@@ -76,6 +81,21 @@ internal class TelegramApiInteraction(val bot: Bot) {
         }
     }
 
+    private fun <T: Any> invokePostMethod(method: String,
+                                          params: List<Pair<String, *>>? = null,
+                                          deserializer: ResponseDeserializable<ResponseDto<T>>,
+                                          callback: (T) -> Unit = {},
+                                          errorCallback: (Exception) -> Unit) {
+        method(method).httpPost(params).responseObject(deserializer) { _, _, result ->
+            result.fold({ okResult ->
+                callback(okResult.result)
+            }) { error ->
+                processError(error)
+                errorCallback(error)
+            }
+        }
+    }
+
     private fun processError(error: FuelError) {
         if(error.exception is SocketTimeoutException) {
             logger.debug("Timeout is over")
@@ -91,7 +111,7 @@ internal class TelegramApiInteraction(val bot: Bot) {
             }
         }
         logger.error("Problem with request", error.exception)
-        logger.error(String(error.errorData));
+        logger.error(String(error.errorData))
     }
 
     private fun method(method: String): String {

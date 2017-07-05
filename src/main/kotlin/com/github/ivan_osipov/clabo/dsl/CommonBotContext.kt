@@ -1,5 +1,6 @@
 package com.github.ivan_osipov.clabo.dsl
 
+import com.github.ivan_osipov.clabo.api.internal.QueueBasedSender
 import com.github.ivan_osipov.clabo.api.model.*
 import com.github.ivan_osipov.clabo.api.output.dto.SendParams
 import com.github.ivan_osipov.clabo.dsl.config.BotConfigContext
@@ -24,6 +25,8 @@ open class CommonBotContext(val bot: Bot) {
     var inlineModeContext = InlineModeContext()
 
     var chatInteractionContext: ChatInteractionContext<*,*>? = null
+
+    private val sender = QueueBasedSender(bot.api)
 
     protected val logger: Logger = LoggerFactory.getLogger(CommonBotContext::class.java)
 
@@ -52,7 +55,7 @@ open class CommonBotContext(val bot: Bot) {
         onStart {
             it.update.message?.chat?.id?.let { chatId: ChatId ->
                 helloMessageSendParams.chatId = chatId
-                bot.api.sendMessage(helloMessageSendParams)
+                sender.send(helloMessageSendParams)
             }
         }
     }
@@ -90,7 +93,7 @@ open class CommonBotContext(val bot: Bot) {
 
     fun say(text: Text, chatId: ChatId) {
         val sendParams = SendParams(chatId, text)
-        bot.api.sendMessage(sendParams)
+        sender.send(sendParams)
     }
 
     fun onStartReply(text: Text, init: SendParams.() -> Unit) {
@@ -102,7 +105,7 @@ open class CommonBotContext(val bot: Bot) {
     fun Message?.reply(text: Text, init: SendParams.() -> Unit) {
         val sendParams = SendParams(this!!.chat.id, text)
         sendParams.init()
-        bot.api.sendMessage(sendParams)
+        sender.send(sendParams)
     }
 
     fun SendParams.replyKeyboard(init: ReplyKeyboardMarkup.() -> Unit) {
@@ -144,7 +147,7 @@ open class CommonBotContext(val bot: Bot) {
             logger.warn("Trying answer but message is undefined")
         } else {
             val sendParams = SendParams(this.chat.id, text)
-            bot.api.sendMessage(sendParams)
+            sender.send(sendParams)
         }
     }
 
