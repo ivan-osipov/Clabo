@@ -1,7 +1,7 @@
 # Clabo
 [![license](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0)
 [![Build Status](https://travis-ci.org/ivan-osipov/Clabo.svg?branch=master)](https://travis-ci.org/ivan-osipov/Clabo) 
-[![Chat](https://img.shields.io/badge/telegram-chat-2370bc.svg)](https://t.me/joinchat/D2ZdJQ57kOIU7APYaDb2eg) 
+[![Chat](https://img.shields.io/badge/any%20questions-telegram-2370bc.svg)](https://t.me/joinchat/D2ZdJQ57kOIU7APYaDb2eg) 
 
 
 Clabo is DSL (Domain-Specific Language) for [Kotlin](https://kotlinlang.org) which gives you the easiest way to create 
