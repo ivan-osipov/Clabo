@@ -24,7 +24,7 @@ open class CommonBotContext(val bot: Bot) {
 
     var inlineModeContext = InlineModeContext()
 
-    var chatInteractionContext: ChatInteractionContext<*,*>? = null
+    var chatInteractionContext: ChatInteractionContext<*, *>? = null
 
     private val sender = QueueBasedSender(bot.api)
 
@@ -35,8 +35,8 @@ open class CommonBotContext(val bot: Bot) {
         check(bot.botName.isNotEmpty(), { "Bot name is not loaded (check api key)" })
     }
 
-    fun <T: ChatStateStore<C>, C: ChatContext> chatting(chatStateStore: T,
-                                                        init: ChatInteractionContext<T, C>.() -> Unit) {
+    fun <T : ChatStateStore<C>, C : ChatContext> chatting(chatStateStore: T,
+                                                          init: ChatInteractionContext<T, C>.() -> Unit) {
         chatInteractionContext = ChatInteractionContext(chatStateStore).apply { init() }
     }
 
@@ -109,9 +109,11 @@ open class CommonBotContext(val bot: Bot) {
     }
 
     fun SendParams.replyKeyboard(init: ReplyKeyboardMarkup.() -> Unit) {
-        replyMarkup = ReplyKeyboardMarkup().apply {
-            init()
-        }
+        replyMarkup = ReplyKeyboardMarkup().apply(init)
+    }
+
+    fun SendParams.inlineKeyboard(init: InlineKeyboardMarkup.() -> Unit) {
+        replyMarkup = InlineKeyboardMarkup().apply(init)
     }
 
     fun SendParams.replyKeyboardRemove(selective: Boolean = false) {
@@ -134,6 +136,42 @@ open class CommonBotContext(val bot: Bot) {
         this.text = text
     }
 
+    fun InlineKeyboardMarkup.button(text: Text, callbackData: String) = abstractButton(text) {
+        this.callbackData = callbackData
+    }
+
+    fun InlineKeyboardMarkup.switchInlineQueryButton(text: Text, switchInlineQuery: String) = abstractButton(text) {
+        this.switchInlineQuery = switchInlineQuery
+    }
+
+    fun InlineKeyboardMarkup.switchInlineQueryCurrentChatButton(text: Text, switchInlineQueryCurrentChat: String)
+            = abstractButton(text) {
+        this.switchInlineQueryCurrentChat = switchInlineQueryCurrentChat
+    }
+
+    fun InlineKeyboardMarkup.callbackGameButton(text: Text, callbackGame: Any) //todo CallbackGame
+            = abstractButton(text) {
+        this.callbackGame = callbackGame
+    }
+
+    fun InlineKeyboardMarkup.payButton(text: Text)
+            = abstractButton(text) {
+        this.pay = true
+    }
+
+    private fun InlineKeyboardMarkup.abstractButton(text: Text, init: InlineKeyboardButton.() -> Unit = {}) = InlineKeyboardButton(text)
+            .apply(init)
+
+    fun InlineKeyboardMarkup.line(vararg buttons: InlineKeyboardButton) {
+        this.keyboard.add(buttons.toList())
+    }
+
+    fun InlineKeyboardMarkup.oneButtonPerLine(vararg buttons: InlineKeyboardButton) {
+        for (button in buttons) {
+            this.keyboard.add(listOf(button))
+        }
+    }
+
     fun ReplyKeyboardMarkup.requestContactButton() = KeyboardButton().apply {
         this.requestContact = true
     }
@@ -143,10 +181,30 @@ open class CommonBotContext(val bot: Bot) {
     }
 
     infix fun Message?.answer(text: Text) {
-        if(this == null) {
+        if (this == null) {
             logger.warn("Trying answer but message is undefined")
         } else {
             val sendParams = SendParams(this.chat.id, text)
+            sender.send(sendParams)
+        }
+    }
+
+    infix fun Message?.markdownAnswer(text: Text) {
+        if (this == null) {
+            logger.warn("Trying answer but message is undefined")
+        } else {
+            val sendParams = SendParams(this.chat.id, text)
+            sendParams.parseMode = ParseMode.MARKDOWN
+            sender.send(sendParams)
+        }
+    }
+
+    infix fun Message?.htmlAnswer(text: Text) {
+        if (this == null) {
+            logger.warn("Trying answer but message is undefined")
+        } else {
+            val sendParams = SendParams(this.chat.id, text)
+            sendParams.parseMode = ParseMode.HTML
             sender.send(sendParams)
         }
     }

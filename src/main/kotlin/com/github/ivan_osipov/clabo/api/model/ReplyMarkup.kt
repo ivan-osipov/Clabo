@@ -4,7 +4,10 @@ import com.google.gson.annotations.SerializedName
 
 sealed class ReplyMarkup
 
-class InlineKeyboardMarkup : ReplyMarkup()
+class InlineKeyboardMarkup : ReplyMarkup() {
+    @SerializedName("inline_keyboard")
+    var keyboard: MutableList<List<InlineKeyboardButton>> = ArrayList()
+}
 
 class ReplyKeyboardMarkup : ReplyMarkup() {
     @SerializedName("keyboard")

@@ -2,10 +2,10 @@ package com.github.ivan_osipov.clabo.api.model
 
 import com.google.gson.annotations.SerializedName
 
-class InlineKeyboardButton {
-
-    @SerializedName("text")
-    lateinit var text: String
+class InlineKeyboardButton(
+        @SerializedName("text")
+        var text: String
+) {
 
     @SerializedName("url")
     var url: String? = null
