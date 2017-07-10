@@ -9,7 +9,12 @@ class InlineKeyboardMarkup : ReplyMarkup() {
     var keyboard: MutableList<List<InlineKeyboardButton>> = ArrayList()
 }
 
-class ReplyKeyboardMarkup : ReplyMarkup() {
+sealed class SelectiveReplyMarkup : ReplyMarkup() {
+    @SerializedName("selective")
+    var selective: Boolean = false
+}
+
+class ReplyKeyboardMarkup : SelectiveReplyMarkup() {
     @SerializedName("keyboard")
     var keyboard: MutableList<List<KeyboardButton>> = ArrayList()
 
@@ -18,19 +23,14 @@ class ReplyKeyboardMarkup : ReplyMarkup() {
 
     @SerializedName("one_time_keyboard")
     var oneTimeKeyboard: Boolean = false
-
-    @SerializedName("selective")
-    var selective: Boolean = false
 }
 
-class ReplyKeyboardRemove : ReplyMarkup() {
-
+class ReplyKeyboardRemove : SelectiveReplyMarkup() {
     @SerializedName("remove_keyboard")
     val removeKeyboard: Boolean = true
-
-    @SerializedName("selective")
-    var selective: Boolean = false
-
 }
 
-class ForceReply : ReplyMarkup()
+class ForceReply : SelectiveReplyMarkup() {
+    @SerializedName("force_reply")
+    val forceReply: Boolean = true
+}
