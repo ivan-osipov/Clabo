@@ -10,9 +10,10 @@ import kotlin.reflect.KClass
 class Bot internal constructor(){
     lateinit var apiKey: String
     lateinit var botName: String
+    var host: String = "https://api.telegram.org"
 
     internal val api = TelegramApiInteraction(this)
-    internal val telegramApiUrl: String by lazy { "https://api.telegram.org/bot$apiKey/" }
+    internal val telegramApiUrl: String by lazy { "$host/bot$apiKey/" }
 
     infix fun launch(init: CommonBotContext.() -> Unit) {
         api.getMe { me ->
@@ -30,9 +31,12 @@ class Bot internal constructor(){
 
 fun bot(bot: Bot) = bot
 
-fun bot(apiKey: String): Bot {
+fun bot(apiKey: String, proxy: String? = null): Bot {
     return Bot().apply {
         this.apiKey = apiKey
+        proxy?.let {
+            this.host = proxy
+        }
     }
 }
 
@@ -51,6 +55,10 @@ fun props(resourceStream: InputStream): Bot {
         return Bot().apply {
             this.apiKey = props["apiKey"] as String
             check(this.apiKey.isNotEmpty(), { "Check api key" })
+            props["proxy"].let { proxy ->
+                this.host = proxy as String
+            }
+
         }
     }
 }
