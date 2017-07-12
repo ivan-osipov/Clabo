@@ -133,6 +133,7 @@ internal class ContextProcessor(val commonBotContext: CommonBotContext) {
         val parameter: String? = if (parts.size > 1) parts[1] else null
         name = name.substring(1)
         val commandObj = Command(name, parameter, update)
+
         return commandObj
     }
 

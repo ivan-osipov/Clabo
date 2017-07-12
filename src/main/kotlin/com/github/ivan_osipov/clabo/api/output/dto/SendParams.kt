@@ -5,7 +5,7 @@ import com.github.ivan_osipov.clabo.api.model.ParseMode
 import com.github.ivan_osipov.clabo.api.model.ReplyMarkup
 import com.google.gson.annotations.SerializedName
 
-class SendParams() {
+class SendParams() : OutputParams {
 
     constructor(chatId: String, text: String) : this() {
         this.chatId = chatId
@@ -42,8 +42,8 @@ class SendParams() {
         this.chatId = chatId.toString()
     }
 
-    fun toListOfPairs(): List<Pair<String, *>> {
-        return listOf("chat_id" to chatId,
+    override fun toListOfPairs(): MutableList<Pair<String, *>> {
+        return mutableListOf("chat_id" to chatId,
                 "text" to text,
                 "parse_mode" to _parseMode,
                 "disable_web_page_preview" to disableWebPagePreview,
