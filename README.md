@@ -7,6 +7,19 @@
 Clabo is DSL (Domain-Specific Language) for [Kotlin](https://kotlinlang.org) which gives you the easiest way to create 
 [bot for Telegram messenger](https://core.telegram.org/bots).  
 
+## Usage
+The easiest sample of bot that you can implement below. You should change 'apiKey' with your value
+```kotlin
+fun main(args: Array<String>) {
+    bot("apiKey") longPool {
+        onStart { command ->
+            val message = command.update.message!!
+            message answer "Hi, ${message.from}"
+        }
+    }
+}
+```
+
 ## The Main Idea
 I believe automatization moves the world forward. I believe that a business which really helps people at same time does 
 them happier. I see that support teams, shops and different services which work with bots really simplify life of them
