@@ -15,7 +15,7 @@ class Bot internal constructor(){
     internal val api = TelegramApiInteraction(this)
     internal val telegramApiUrl: String by lazy { "$host/bot$apiKey/" }
 
-    infix fun launch(init: CommonBotContext.() -> Unit) {
+    infix fun longPool(init: CommonBotContext.() -> Unit) {
         api.getMe { me ->
             this.botName = me.username ?: "undefined"
             println("Personal bot: ${me.firstName} (${this.botName}) started")

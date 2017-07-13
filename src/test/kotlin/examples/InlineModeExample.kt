@@ -4,7 +4,7 @@ import com.github.ivan_osipov.clabo.dsl.bot
 import com.github.ivan_osipov.clabo.dsl.props
 
 fun main(args: Array<String>) {
-    bot(props(Main::class, "bot.properties")) launch {
+    bot(props(Main::class, "bot.properties")) longPool {
 
         configure {
             helloMessage("Hello! I'm Bot")
