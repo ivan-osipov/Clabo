@@ -60,6 +60,7 @@ internal class ContextProcessor(val commonBotContext: CommonBotContext) {
         chatInteractionContext?.let {
             chatStateStore = it.chatStateStore
         }
+        var callbackQueryProcessors = commonBotContext.callbackQueryProcessors
 
         val executionBatch = ExecutionBatch()
         for (update in updates) {
@@ -109,6 +110,18 @@ internal class ContextProcessor(val commonBotContext: CommonBotContext) {
                 inlineModeContext.inlineQueryCallbacks.forEach { callback ->
                     executionBatch.callbacks.add {
                         callback(inlineQuery, update)
+                    }
+                }
+            }
+            val callbackQuery = update.callbackQuery
+            if(callbackQuery != null) {
+                val callbackQueryData = callbackQuery.data
+                if(callbackQueryData != null) {
+                    val callbackProcessor = callbackQueryProcessors[callbackQueryData]
+                    if(callbackProcessor != null) {
+                        executionBatch.callbacks.add {
+                            callbackProcessor.invoke(callbackQuery, update)
+                        }
                     }
                 }
             }

@@ -8,7 +8,7 @@ import com.github.ivan_osipov.clabo.utils.Text
 class AnswerCallbackQueryGameParams(callbackQueryId: String,
                                     text: Text? = null,
                                     showAlert: Boolean = false,
-                                    cacheTime: Int? = null,
+                                    cacheTime: Int = 0,
                                     var url: String? = null)
     : AnswerCallbackQueryParams(callbackQueryId, text, showAlert, cacheTime) {
     override fun toListOfPairs(): MutableList<Pair<String, *>> {

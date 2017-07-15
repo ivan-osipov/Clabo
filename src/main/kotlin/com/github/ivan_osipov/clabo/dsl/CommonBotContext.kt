@@ -2,6 +2,7 @@ package com.github.ivan_osipov.clabo.dsl
 
 import com.github.ivan_osipov.clabo.api.internal.QueueBasedSender
 import com.github.ivan_osipov.clabo.api.model.*
+import com.github.ivan_osipov.clabo.api.output.dto.AnswerCallbackQueryParams
 import com.github.ivan_osipov.clabo.api.output.dto.SendParams
 import com.github.ivan_osipov.clabo.dsl.config.BotConfigContext
 import com.github.ivan_osipov.clabo.dsl.perks.command.Command
@@ -25,6 +26,8 @@ open class CommonBotContext(val bot: Bot) {
     var inlineModeContext = InlineModeContext()
 
     var chatInteractionContext: ChatInteractionContext<*, *>? = null
+
+    var callbackQueryProcessors = HashMap<String, (CallbackQuery, Update) -> Unit>()
 
     private val sender = QueueBasedSender(bot.api)
 
@@ -91,7 +94,7 @@ open class CommonBotContext(val bot: Bot) {
         inlineModeContext.init()
     }
 
-    fun say(text: Text, chatId: ChatId) {
+    fun send(text: Text, chatId: ChatId) {
         val sendParams = SendParams(chatId, text)
         sender.send(sendParams)
     }
@@ -136,8 +139,12 @@ open class CommonBotContext(val bot: Bot) {
         this.text = text
     }
 
-    fun InlineKeyboardMarkup.button(text: Text, callbackData: String) = abstractButton(text) {
+    fun InlineKeyboardMarkup.button(text: Text,
+                                    callbackData: String,
+                                    callbackQueryProcessor: (CallbackQuery, Update) -> Unit = {_,_ -> })
+            = abstractButton(text) {
         this.callbackData = callbackData
+        callbackQueryProcessors.put(callbackData, callbackQueryProcessor)
     }
 
     fun InlineKeyboardMarkup.switchInlineQueryButton(text: Text, switchInlineQuery: String) = abstractButton(text) {
@@ -187,6 +194,15 @@ open class CommonBotContext(val bot: Bot) {
             val sendParams = SendParams(this.chat.id, text)
             sender.send(sendParams)
         }
+    }
+
+    infix fun CallbackQuery.answer(init: AnswerCallbackQueryParams.() -> Unit) {
+        val callbackQueryAnswer = makeAnswer().apply(init)
+        sender.send(callbackQueryAnswer)
+    }
+
+    fun CallbackQuery.makeAnswer(): AnswerCallbackQueryParams {
+        return AnswerCallbackQueryParams(this.id)
     }
 
     infix fun Message?.markdownAnswer(text: Text) {

@@ -8,6 +8,7 @@ import com.github.ivan_osipov.clabo.api.input.UserDto
 import com.github.ivan_osipov.clabo.api.model.Message
 import com.github.ivan_osipov.clabo.api.model.Update
 import com.github.ivan_osipov.clabo.api.model.User
+import com.github.ivan_osipov.clabo.api.output.dto.AnswerCallbackQueryParams
 import com.github.ivan_osipov.clabo.api.output.dto.SendParams
 import com.github.ivan_osipov.clabo.api.output.dto.UpdatesParams
 import com.github.kittinunf.fuel.core.FuelError
@@ -25,9 +26,10 @@ internal class TelegramApiInteraction(val bot: Bot) {
     private val logger: Logger = LoggerFactory.getLogger(TelegramApiInteraction::class.java)
 
     companion object {
-        val GET_ME : String = "getMe"
-        val GET_UPDATES : String = "getUpdates"
-        val SEND_MESSAGE : String = "sendMessage"
+        val GET_ME: String = "getMe"
+        val GET_UPDATES: String = "getUpdates"
+        val SEND_MESSAGE: String = "sendMessage"
+        val ANSWER_CALLBACK_QUERY: String = "answerCallbackQuery"
     }
 
     fun getMe(callback: (User) -> Unit) {
@@ -39,25 +41,29 @@ internal class TelegramApiInteraction(val bot: Bot) {
     }
 
     fun sendMessage(sendParams: SendParams) {
-        invokePostMethod(SEND_MESSAGE, sendParams.toListOfPairs(), MessageDto.deserializer)
+        invokePostMethod(SEND_MESSAGE, sendParams.toListOfPairs())
+    }
+
+    fun sendMessage(sendParams: AnswerCallbackQueryParams) {
+        invokePostMethod(ANSWER_CALLBACK_QUERY, sendParams.toListOfPairs())
     }
 
     fun sendMessage(sendParams: SendParams, callback: (Message) -> Unit, errorCallback: (Exception) -> Unit) {
         invokePostMethod(SEND_MESSAGE, sendParams.toListOfPairs(), MessageDto.deserializer, callback, errorCallback)
     }
 
-    private fun <T: Any> invokeGetMethod(method: String,
-                                         deserializer: ResponseDeserializable<ResponseDto<T>>,
-                                         callback: (T) -> Unit = {},
-                                         errorCallback: (Exception) -> Unit = {}) {
+    private fun <T : Any> invokeGetMethod(method: String,
+                                          deserializer: ResponseDeserializable<ResponseDto<T>>,
+                                          callback: (T) -> Unit = {},
+                                          errorCallback: (Exception) -> Unit = {}) {
         invokeGetMethod(method, null, deserializer, callback, errorCallback)
     }
 
-    private fun <T: Any> invokeGetMethod(method: String,
-                                         params: List<Pair<String, *>>? = null,
-                                         deserializer: ResponseDeserializable<ResponseDto<T>>,
-                                         callback: (T) -> Unit = {},
-                                         errorCallback: (Exception) -> Unit = {}) {
+    private fun <T : Any> invokeGetMethod(method: String,
+                                          params: List<Pair<String, *>>? = null,
+                                          deserializer: ResponseDeserializable<ResponseDto<T>>,
+                                          callback: (T) -> Unit = {},
+                                          errorCallback: (Exception) -> Unit = {}) {
         method(method).httpGet(params).responseObject(deserializer) { _, _, result ->
             result.fold({ okResult ->
                 callback(okResult.result)
@@ -68,24 +74,23 @@ internal class TelegramApiInteraction(val bot: Bot) {
         }
     }
 
-    private fun <T: Any> invokePostMethod(method: String,
-                                          params: List<Pair<String, *>>? = null,
-                                          deserializer: ResponseDeserializable<ResponseDto<T>>,
-                                          callback: (T) -> Unit = {}) {
-        method(method).httpPost(params).responseObject(deserializer) { _, _, result ->
-            result.fold({ okResult ->
-                callback(okResult.result)
+    private fun invokePostMethod(method: String,
+                                 params: List<Pair<String, *>>? = null,
+                                 callback: () -> Unit = {}) {
+        method(method).httpPost(params).response { _, _, result ->
+            result.fold({ _ ->
+                callback()
             }) { error ->
                 processError(error)
             }
         }
     }
 
-    private fun <T: Any> invokePostMethod(method: String,
-                                          params: List<Pair<String, *>>? = null,
-                                          deserializer: ResponseDeserializable<ResponseDto<T>>,
-                                          callback: (T) -> Unit = {},
-                                          errorCallback: (Exception) -> Unit) {
+    private fun <T : Any> invokePostMethod(method: String,
+                                           params: List<Pair<String, *>>? = null,
+                                           deserializer: ResponseDeserializable<ResponseDto<T>>,
+                                           callback: (T) -> Unit = {},
+                                           errorCallback: (Exception) -> Unit) {
         method(method).httpPost(params).responseObject(deserializer) { _, _, result ->
             result.fold({ okResult ->
                 callback(okResult.result)
@@ -97,11 +102,11 @@ internal class TelegramApiInteraction(val bot: Bot) {
     }
 
     private fun processError(error: FuelError) {
-        if(error.exception is SocketTimeoutException) {
+        if (error.exception is SocketTimeoutException) {
             logger.debug("Timeout is over")
             return
         }
-        if(error.response.httpStatusCode != -1) {
+        if (error.response.httpStatusCode != -1) {
             logger.error("Problems with api. Status code ${error.response.httpStatusCode}.")
             if (error.response.httpStatusCode == 404) {
                 logger.error("Check api key")

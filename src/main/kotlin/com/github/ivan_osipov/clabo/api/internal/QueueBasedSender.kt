@@ -1,5 +1,6 @@
 package com.github.ivan_osipov.clabo.api.internal
 
+import com.github.ivan_osipov.clabo.api.output.dto.AnswerCallbackQueryParams
 import com.github.ivan_osipov.clabo.api.output.dto.SendParams
 import com.github.ivan_osipov.clabo.utils.ChatId
 import com.google.common.base.Preconditions.checkArgument
@@ -18,6 +19,8 @@ internal class QueueBasedSender(val apiInteraction: TelegramApiInteraction) {
     val messageProcessingSemaphore = Semaphore(0)
 
     private val chatOutputMap: MutableMap<ChatId, ChatInfo> = Maps.newHashMap()
+
+    private val callbackQueryAnswers: Queue<AnswerCallbackQueryParams> = Queues.newLinkedBlockingQueue()
 
     private val workerExecutor: Executor = Executors.newSingleThreadExecutor() //executes thread for queue processing
 
@@ -39,6 +42,12 @@ internal class QueueBasedSender(val apiInteraction: TelegramApiInteraction) {
         notifyWorker()
     }
 
+    fun send(answer: AnswerCallbackQueryParams) {
+        callbackQueryAnswers.add(answer)
+        logger.debug("New answer callback query")
+        notifyWorker()
+    }
+
     inner class WorkerThread : Runnable {
 
         private val logger: Logger = LoggerFactory.getLogger(WorkerThread::class.java)
@@ -46,7 +55,7 @@ internal class QueueBasedSender(val apiInteraction: TelegramApiInteraction) {
         override fun run() {
             while (true) {
                 val chatsForProcessing = chatOutputMap.filter { it.value.canBeProcessed() }.values
-                if(chatsForProcessing.isEmpty()) {
+                if(chatsForProcessing.isEmpty() && callbackQueryAnswers.isEmpty()) {
                     messageProcessingSemaphore.acquire()
                     logger.debug("The worker thread is unlocked")
                     continue
@@ -71,6 +80,12 @@ internal class QueueBasedSender(val apiInteraction: TelegramApiInteraction) {
                         })
                     }
                 }
+                if(callbackQueryAnswers.isNotEmpty()) {
+                    while (callbackQueryAnswers.isNotEmpty()) {
+                        apiInteraction.sendMessage(callbackQueryAnswers.remove())
+                    }
+                }
+                Thread.sleep(1)
             }
         }
     }
