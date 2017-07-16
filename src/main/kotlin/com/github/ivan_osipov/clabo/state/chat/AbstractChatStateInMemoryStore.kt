@@ -1,7 +1,6 @@
 package com.github.ivan_osipov.clabo.state.chat
 
 import com.github.ivan_osipov.clabo.utils.ChatId
-import examples.buyartbot.ChatState
 
 abstract class AbstractChatStateInMemoryStore<T : ChatState<C>, C : ChatContext> : ChatStateStore<C> {
 
