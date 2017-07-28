@@ -207,6 +207,11 @@ open class CommonBotContext(val bot: Bot) {
         sender.send(callbackQueryAnswer)
     }
 
+    fun CallbackQuery.emptyAnswer() {
+        val callbackQueryAnswer = makeAnswer()
+        sender.send(callbackQueryAnswer)
+    }
+
     fun CallbackQuery.makeAnswer(): AnswerCallbackQueryParams {
         return AnswerCallbackQueryParams(this.id)
     }
