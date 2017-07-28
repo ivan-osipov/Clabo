@@ -11,6 +11,14 @@ open class AnswerCallbackQueryParams(
         var text: Text? = null,
         var showAlert: Boolean = false,
         var cacheTime: Int = 0) : OutputParams {
+
+    companion object {
+        val ANSWER_CALLBACK_QUERY = "answerCallbackQuery"
+    }
+
+    override val queryId: String
+        get() = ANSWER_CALLBACK_QUERY
+
     override fun toListOfPairs(): MutableList<Pair<String, *>> {
         return mutableListOf("callback_query_id" to callbackQueryId,
                 "text" to text,

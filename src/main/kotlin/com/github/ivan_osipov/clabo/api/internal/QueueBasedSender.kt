@@ -1,6 +1,7 @@
 package com.github.ivan_osipov.clabo.api.internal
 
-import com.github.ivan_osipov.clabo.api.output.dto.AnswerCallbackQueryParams
+import com.github.ivan_osipov.clabo.api.model.Message
+import com.github.ivan_osipov.clabo.api.output.dto.OutputParams
 import com.github.ivan_osipov.clabo.api.output.dto.SendParams
 import com.github.ivan_osipov.clabo.utils.ChatId
 import com.google.common.base.Preconditions.checkArgument
@@ -13,6 +14,7 @@ import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 import java.util.concurrent.Semaphore
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.collections.HashMap
 
 internal class QueueBasedSender(val apiInteraction: TelegramApiInteraction) {
 
@@ -20,7 +22,7 @@ internal class QueueBasedSender(val apiInteraction: TelegramApiInteraction) {
 
     private val chatOutputMap: MutableMap<ChatId, ChatInfo> = Maps.newHashMap()
 
-    private val callbackQueryAnswers: Queue<AnswerCallbackQueryParams> = Queues.newLinkedBlockingQueue()
+    private val sharedOutputQueue: Queue<OutputParams> = Queues.newLinkedBlockingQueue()
 
     private val workerExecutor: Executor = Executors.newSingleThreadExecutor() //executes thread for queue processing
 
@@ -31,20 +33,21 @@ internal class QueueBasedSender(val apiInteraction: TelegramApiInteraction) {
         logger.debug("QueueBasedSender is initialized")
     }
 
-    fun send(message: SendParams) {
+    fun send(message: SendParams, successCallback: (Message) -> Unit = {}) {
         var chatOutput = chatOutputMap[message.chatId]
         if (chatOutput == null) {
             chatOutput = ChatInfo(message.chatId)
             chatOutputMap[message.chatId] = chatOutput
         }
+        chatOutput.successCallbacks.put(message, successCallback)
         chatOutput.outputQueue.add(message)
         logger.debug("New message in queue (chatId: ${chatOutput.chatId})")
         notifyWorker()
     }
 
-    fun send(answer: AnswerCallbackQueryParams) {
-        callbackQueryAnswers.add(answer)
-        logger.debug("New answer callback query")
+    fun send(answer: OutputParams) {
+        sharedOutputQueue.add(answer)
+        logger.debug("New output message")
         notifyWorker()
     }
 
@@ -55,7 +58,7 @@ internal class QueueBasedSender(val apiInteraction: TelegramApiInteraction) {
         override fun run() {
             while (true) {
                 val chatsForProcessing = chatOutputMap.filter { it.value.canBeProcessed() }.values
-                if(chatsForProcessing.isEmpty() && callbackQueryAnswers.isEmpty()) {
+                if(chatsForProcessing.isEmpty() && sharedOutputQueue.isEmpty()) {
                     messageProcessingSemaphore.acquire()
                     logger.debug("The worker thread is unlocked")
                     continue
@@ -71,18 +74,19 @@ internal class QueueBasedSender(val apiInteraction: TelegramApiInteraction) {
                         val headMessage = chatForProcessing.outputQueue.remove()
                         checkArgument(headMessage == message, "Incorrect message as the queue head")
 
-                        apiInteraction.sendMessage(message, {
+                        apiInteraction.sendMessage(message, { createdBotMessage ->
                             chatForProcessing.resultTalkingMutex.set(false)
                             notifyWorker()
+                            chatForProcessing.successCallbacks[message]?.invoke(createdBotMessage)
                         }, {
                             chatForProcessing.resultTalkingMutex.set(false)
                             notifyWorker()
                         })
                     }
                 }
-                if(callbackQueryAnswers.isNotEmpty()) {
-                    while (callbackQueryAnswers.isNotEmpty()) {
-                        apiInteraction.sendMessage(callbackQueryAnswers.remove())
+                if(sharedOutputQueue.isNotEmpty()) {
+                    while (sharedOutputQueue.isNotEmpty()) {
+                        apiInteraction.sendMessage(sharedOutputQueue.remove())
                     }
                 }
                 Thread.sleep(1)
@@ -98,7 +102,8 @@ internal class QueueBasedSender(val apiInteraction: TelegramApiInteraction) {
 
     private class ChatInfo(val chatId: ChatId,
                    val resultTalkingMutex: AtomicBoolean = AtomicBoolean(false),
-                   val outputQueue: Queue<SendParams> = Queues.newLinkedBlockingQueue()) {
+                   val outputQueue: Queue<SendParams> = Queues.newLinkedBlockingQueue(),
+                   val successCallbacks: MutableMap<SendParams, (Message) -> Unit> = HashMap()) {
         fun canBeProcessed() = !resultTalkingMutex.get() && outputQueue.isNotEmpty()
     }
 }

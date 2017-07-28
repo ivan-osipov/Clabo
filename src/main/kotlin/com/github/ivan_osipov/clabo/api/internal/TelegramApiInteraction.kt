@@ -8,7 +8,7 @@ import com.github.ivan_osipov.clabo.api.input.UserDto
 import com.github.ivan_osipov.clabo.api.model.Message
 import com.github.ivan_osipov.clabo.api.model.Update
 import com.github.ivan_osipov.clabo.api.model.User
-import com.github.ivan_osipov.clabo.api.output.dto.AnswerCallbackQueryParams
+import com.github.ivan_osipov.clabo.api.output.dto.OutputParams
 import com.github.ivan_osipov.clabo.api.output.dto.SendParams
 import com.github.ivan_osipov.clabo.api.output.dto.UpdatesParams
 import com.github.kittinunf.fuel.core.FuelError
@@ -27,9 +27,7 @@ internal class TelegramApiInteraction(val bot: Bot) {
 
     companion object {
         val GET_ME: String = "getMe"
-        val GET_UPDATES: String = "getUpdates"
         val SEND_MESSAGE: String = "sendMessage"
-        val ANSWER_CALLBACK_QUERY: String = "answerCallbackQuery"
     }
 
     fun getMe(callback: (User) -> Unit) {
@@ -37,15 +35,15 @@ internal class TelegramApiInteraction(val bot: Bot) {
     }
 
     fun getUpdates(params: UpdatesParams = defaultUpdatesParams, callback: (List<Update>) -> Unit, errorCallback: (Exception) -> Unit = {}) {
-        invokeGetMethod(GET_UPDATES, params.toListOfPairs(), UpdatesDto.deserializer, callback, errorCallback)
+        invokeGetMethod(UpdatesParams.GET_UPDATES, params.toListOfPairs(), UpdatesDto.deserializer, callback, errorCallback)
     }
 
     fun sendMessage(sendParams: SendParams) {
         invokePostMethod(SEND_MESSAGE, sendParams.toListOfPairs())
     }
 
-    fun sendMessage(sendParams: AnswerCallbackQueryParams) {
-        invokePostMethod(ANSWER_CALLBACK_QUERY, sendParams.toListOfPairs())
+    fun sendMessage(outputParams: OutputParams) {
+        invokePostMethod(outputParams.queryId, outputParams.toListOfPairs())
     }
 
     fun sendMessage(sendParams: SendParams, callback: (Message) -> Unit, errorCallback: (Exception) -> Unit) {

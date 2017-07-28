@@ -3,6 +3,7 @@ package com.github.ivan_osipov.clabo.dsl
 import com.github.ivan_osipov.clabo.api.internal.QueueBasedSender
 import com.github.ivan_osipov.clabo.api.model.*
 import com.github.ivan_osipov.clabo.api.output.dto.AnswerCallbackQueryParams
+import com.github.ivan_osipov.clabo.api.output.dto.DeleteMessageParams
 import com.github.ivan_osipov.clabo.api.output.dto.SendParams
 import com.github.ivan_osipov.clabo.dsl.config.BotConfigContext
 import com.github.ivan_osipov.clabo.dsl.perks.command.Command
@@ -12,6 +13,7 @@ import com.github.ivan_osipov.clabo.state.chat.ChatContext
 import com.github.ivan_osipov.clabo.state.chat.ChatInteractionContext
 import com.github.ivan_osipov.clabo.state.chat.ChatStateStore
 import com.github.ivan_osipov.clabo.utils.ChatId
+import com.github.ivan_osipov.clabo.utils.MessageId
 import com.github.ivan_osipov.clabo.utils.Text
 import com.google.common.base.Joiner
 import org.slf4j.Logger
@@ -106,9 +108,13 @@ open class CommonBotContext(val bot: Bot) {
     }
 
     fun Message?.reply(text: Text, init: SendParams.() -> Unit) {
+        reply(text, init, {})
+    }
+
+    fun Message?.reply(text: Text, init: SendParams.() -> Unit, successCallback: (Message) -> Unit = {}) {
         val sendParams = SendParams(this!!.chat.id, text)
         sendParams.init()
-        sender.send(sendParams)
+        sender.send(sendParams, successCallback)
     }
 
     fun SendParams.replyKeyboard(init: ReplyKeyboardMarkup.() -> Unit) {
@@ -141,7 +147,7 @@ open class CommonBotContext(val bot: Bot) {
 
     fun InlineKeyboardMarkup.button(text: Text,
                                     callbackData: String,
-                                    callbackQueryProcessor: (CallbackQuery, Update) -> Unit = {_,_ -> })
+                                    callbackQueryProcessor: (CallbackQuery, Update) -> Unit = { _, _ -> })
             = abstractButton(text) {
         this.callbackData = callbackData
         callbackQueryProcessors.put(callbackData, callbackQueryProcessor)
@@ -222,6 +228,16 @@ open class CommonBotContext(val bot: Bot) {
             val sendParams = SendParams(this.chat.id, text)
             sendParams.parseMode = ParseMode.HTML
             sender.send(sendParams)
+        }
+    }
+
+    fun deleteMessage(chatId: ChatId, messageId: MessageId) {
+        sender.send(DeleteMessageParams(chatId, messageId))
+    }
+
+    fun Message?.deleteMessage() {
+        this?.let {
+            deleteMessage(this.chat.id, this.id)
         }
     }
 

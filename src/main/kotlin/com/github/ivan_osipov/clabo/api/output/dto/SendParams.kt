@@ -5,7 +5,7 @@ import com.github.ivan_osipov.clabo.api.model.ParseMode
 import com.github.ivan_osipov.clabo.api.model.ReplyMarkup
 import com.google.gson.annotations.SerializedName
 
-class SendParams() : OutputParams {
+class SendParams() : SyncByChatsOutputParams {
 
     constructor(chatId: String, text: String) : this() {
         this.chatId = chatId
