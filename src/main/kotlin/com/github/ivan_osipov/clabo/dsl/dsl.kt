@@ -4,6 +4,7 @@ import com.github.ivan_osipov.clabo.api.internal.TelegramApiInteraction
 import com.github.ivan_osipov.clabo.dsl.internal.contextProcessing.ContextProcessor
 import java.io.FileInputStream
 import java.io.InputStream
+import java.lang.IllegalStateException
 import java.util.*
 import kotlin.reflect.KClass
 
@@ -53,9 +54,9 @@ fun props(resourceStream: InputStream): Bot {
         props.load(it)
 
         return Bot().apply {
-            this.apiKey = props["apiKey"] as String
+            this.apiKey = (props["apiKey"] ?: throw IllegalStateException("apiKey is not defined in properties")) as String
             check(this.apiKey.isNotEmpty(), { "Check api key" })
-            props["proxy"].let { proxy ->
+            props["proxy"]?.let { proxy ->
                 this.host = proxy as String
             }
 

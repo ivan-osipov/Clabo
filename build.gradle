@@ -38,10 +38,14 @@ task fatJar(type: Jar) {
     with jar
 }
 
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
 publishing {
     publications {
-        mavenJava(MavenPublication) {
-            from components.java
+        main(MavenPublication) {
             artifact jar
         }
     }
