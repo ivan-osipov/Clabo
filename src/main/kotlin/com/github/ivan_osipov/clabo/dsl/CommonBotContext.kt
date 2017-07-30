@@ -4,6 +4,7 @@ import com.github.ivan_osipov.clabo.api.internal.QueueBasedSender
 import com.github.ivan_osipov.clabo.api.model.*
 import com.github.ivan_osipov.clabo.api.output.dto.AnswerCallbackQueryParams
 import com.github.ivan_osipov.clabo.api.output.dto.DeleteMessageParams
+import com.github.ivan_osipov.clabo.api.output.dto.EditMessageTextParams
 import com.github.ivan_osipov.clabo.api.output.dto.SendParams
 import com.github.ivan_osipov.clabo.dsl.config.BotConfigContext
 import com.github.ivan_osipov.clabo.dsl.perks.command.Command
@@ -96,8 +97,9 @@ open class CommonBotContext(val bot: Bot) {
         inlineModeContext.init()
     }
 
-    fun send(text: Text, chatId: ChatId) {
+    fun send(text: Text, chatId: ChatId, init: SendParams.() -> Unit = {}) {
         val sendParams = SendParams(chatId, text)
+        sendParams.init()
         sender.send(sendParams)
     }
 
@@ -240,10 +242,14 @@ open class CommonBotContext(val bot: Bot) {
         sender.send(DeleteMessageParams(chatId, messageId))
     }
 
-    fun Message?.deleteMessage() {
-        this?.let {
-            deleteMessage(this.chat.id, this.id)
-        }
+    fun Message.deleteMessage() {
+        deleteMessage(this.chat.id, this.id)
+    }
+
+    fun Message.editMessage(text: Text, init: EditMessageTextParams.() -> Unit) {
+        val editMessageTextParams = EditMessageTextParams(text)
+        editMessageTextParams.init()
+        sender.send(editMessageTextParams)
     }
 
 }

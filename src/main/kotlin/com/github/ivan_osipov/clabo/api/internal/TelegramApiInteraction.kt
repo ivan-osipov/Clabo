@@ -35,7 +35,7 @@ internal class TelegramApiInteraction(val bot: Bot) {
     }
 
     fun getUpdates(params: UpdatesParams = defaultUpdatesParams, callback: (List<Update>) -> Unit, errorCallback: (Exception) -> Unit = {}) {
-        invokeGetMethod(UpdatesParams.GET_UPDATES, params.toListOfPairs(), UpdatesDto.deserializer, callback, errorCallback)
+        invokeGetMethod(params.queryId, params.toListOfPairs(), UpdatesDto.deserializer, callback, errorCallback)
     }
 
     fun sendMessage(sendParams: SendParams) {
