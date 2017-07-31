@@ -26,6 +26,8 @@ internal class QueueBasedSender(val apiInteraction: TelegramApiInteraction) {
 
     private val workerExecutor: Executor = Executors.newSingleThreadExecutor() //executes thread for queue processing
 
+    val successCallbacks: MutableMap<OutputParams, (Message) -> Unit> = HashMap()
+
     private val logger: Logger = LoggerFactory.getLogger(QueueBasedSender::class.java)
 
     init {
@@ -45,8 +47,9 @@ internal class QueueBasedSender(val apiInteraction: TelegramApiInteraction) {
         notifyWorker()
     }
 
-    fun send(answer: OutputParams) {
-        sharedOutputQueue.add(answer)
+    fun send(outputParams: OutputParams, successCallback: (Message) -> Unit = {}) {
+        successCallbacks[outputParams] = successCallback
+        sharedOutputQueue.add(outputParams)
         logger.debug("New output message")
         notifyWorker()
     }
@@ -86,7 +89,10 @@ internal class QueueBasedSender(val apiInteraction: TelegramApiInteraction) {
                 }
                 if(sharedOutputQueue.isNotEmpty()) {
                     while (sharedOutputQueue.isNotEmpty()) {
-                        apiInteraction.sendMessage(sharedOutputQueue.remove())
+                        val outputParams = sharedOutputQueue.remove()
+                        apiInteraction.sendMessage(outputParams) { createdBotMessage: Message ->
+                            successCallbacks[outputParams]?.invoke(createdBotMessage)
+                        }
                     }
                 }
                 Thread.sleep(1)

@@ -2,10 +2,7 @@ package com.github.ivan_osipov.clabo.dsl
 
 import com.github.ivan_osipov.clabo.api.internal.QueueBasedSender
 import com.github.ivan_osipov.clabo.api.model.*
-import com.github.ivan_osipov.clabo.api.output.dto.AnswerCallbackQueryParams
-import com.github.ivan_osipov.clabo.api.output.dto.DeleteMessageParams
-import com.github.ivan_osipov.clabo.api.output.dto.EditMessageTextParams
-import com.github.ivan_osipov.clabo.api.output.dto.SendParams
+import com.github.ivan_osipov.clabo.api.output.dto.*
 import com.github.ivan_osipov.clabo.dsl.config.BotConfigContext
 import com.github.ivan_osipov.clabo.dsl.perks.command.Command
 import com.github.ivan_osipov.clabo.dsl.perks.command.CommandsContext
@@ -98,9 +95,13 @@ open class CommonBotContext(val bot: Bot) {
     }
 
     fun send(text: Text, chatId: ChatId, init: SendParams.() -> Unit = {}) {
+        send(text, chatId, init, {})
+    }
+
+    fun send(text: Text, chatId: ChatId, init: SendParams.() -> Unit, successCallback: (Message) -> Unit = {}) {
         val sendParams = SendParams(chatId, text)
         sendParams.init()
-        sender.send(sendParams)
+        sender.send(sendParams, successCallback)
     }
 
     fun onStartReply(text: Text, init: SendParams.() -> Unit) {
@@ -121,10 +122,6 @@ open class CommonBotContext(val bot: Bot) {
 
     fun SendParams.replyKeyboard(init: ReplyKeyboardMarkup.() -> Unit) {
         replyMarkup = ReplyKeyboardMarkup().apply(init)
-    }
-
-    fun SendParams.inlineKeyboard(init: InlineKeyboardMarkup.() -> Unit) {
-        replyMarkup = InlineKeyboardMarkup().apply(init)
     }
 
     fun SendParams.replyKeyboardRemove(selective: Boolean = false) {
@@ -149,10 +146,12 @@ open class CommonBotContext(val bot: Bot) {
 
     fun InlineKeyboardMarkup.button(text: Text,
                                     callbackData: String,
-                                    callbackQueryProcessor: (CallbackQuery, Update) -> Unit = { _, _ -> })
+                                    callbackQueryProcessor: ((CallbackQuery, Update) -> Unit)? = null)
             = abstractButton(text) {
         this.callbackData = callbackData
-        callbackQueryProcessors.put(callbackData, callbackQueryProcessor)
+        if(callbackQueryProcessor != null) {
+            callbackQueryProcessors.put(callbackData, callbackQueryProcessor)
+        }
     }
 
     fun InlineKeyboardMarkup.switchInlineQueryButton(text: Text, switchInlineQuery: String) = abstractButton(text) {
@@ -238,7 +237,7 @@ open class CommonBotContext(val bot: Bot) {
         }
     }
 
-    fun deleteMessage(chatId: ChatId, messageId: MessageId) {
+    fun CommonBotContext.deleteMessage(chatId: ChatId, messageId: MessageId) {
         sender.send(DeleteMessageParams(chatId, messageId))
     }
 
@@ -247,9 +246,46 @@ open class CommonBotContext(val bot: Bot) {
     }
 
     fun Message.editMessage(text: Text, init: EditMessageTextParams.() -> Unit) {
+        editMessage(text, init, {})
+    }
+
+    fun Message.editMessage(text: Text, init: EditMessageTextParams.() -> Unit, successCallback: (Message) -> Unit) {
         val editMessageTextParams = EditMessageTextParams(text)
         editMessageTextParams.init()
-        sender.send(editMessageTextParams)
+        sender.send(editMessageTextParams, successCallback)
+    }
+
+    fun Message.forwardTo(chatId: ChatId, disableNotification: Boolean = false, successCallback: (Message) -> Unit = {}) {
+        forwardMessage(chatId, this.chat.id, this.id, disableNotification, successCallback)
+    }
+
+    fun forwardMessage(chatId: ChatId, fromChatId: ChatId, messageId: MessageId, disableNotification: Boolean = false, successCallback: (Message) -> Unit = {}) {
+        sender.send(ForwardMessageParams(chatId, fromChatId, messageId, disableNotification), successCallback)
+    }
+
+    fun editMessageReplyMarkup(init: EditMessageReplyMarkupParams.() -> Unit, successCallback: (Message) -> Unit = {}) {
+        val params = EditMessageReplyMarkupParams()
+        sender.send(params, successCallback)
+    }
+
+    fun Message.editMessageReplyMarkup(init: EditMessageReplyMarkupParams.() -> Unit) {
+        editMessageReplyMarkup(init, {})
+    }
+
+    fun Message.editMessageReplyMarkup(init: EditMessageReplyMarkupParams.() -> Unit, successCallback: (Message) -> Unit = {}) {
+        val params = EditMessageReplyMarkupParams()
+        params.chatId = this.chat.id
+        params.messageId = this.id
+        params.init()
+        sender.send(params, successCallback)
+    }
+
+    fun HasEditableReplyMarkup<in InlineKeyboardMarkup>.inlineKeyboard(init: InlineKeyboardMarkup.() -> Unit) {
+        replyMarkup = InlineKeyboardMarkup().apply(init)
+    }
+
+    fun <T: ReplyMarkup> HasEditableReplyMarkup<T>.emptyReplyMarkup() {
+        replyMarkup = null
     }
 
 }

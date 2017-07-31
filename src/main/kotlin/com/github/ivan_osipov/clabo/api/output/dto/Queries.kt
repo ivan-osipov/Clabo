@@ -10,4 +10,8 @@ object Queries {
 
     val ANSWER_CALLBACK_QUERY = "answerCallbackQuery"
 
+    val FORWARD_MESSAGE = "forwardMessage"
+
+    val EDIT_MESSAGE_REPLY_MARKUP = "editMessageReplyMarkup"
+
 }

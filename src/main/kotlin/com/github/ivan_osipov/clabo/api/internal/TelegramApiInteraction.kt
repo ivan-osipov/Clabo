@@ -42,8 +42,12 @@ internal class TelegramApiInteraction(val bot: Bot) {
         invokePostMethod(SEND_MESSAGE, sendParams.toListOfPairs())
     }
 
-    fun sendMessage(outputParams: OutputParams) {
-        invokePostMethod(outputParams.queryId, outputParams.toListOfPairs())
+    fun sendMessage(outputParams: OutputParams, successfulCallback: (Message) -> Unit) {
+        invokePostMethod(outputParams.queryId, outputParams.toListOfPairs(), MessageDto.deserializer, successfulCallback, {})
+    }
+
+    fun sendMessage(outputParams: OutputParams, successfulCallback: (Message) -> Unit = {}, errorCallback: (Exception) -> Unit = {}) {
+        invokePostMethod(outputParams.queryId, outputParams.toListOfPairs(), MessageDto.deserializer, successfulCallback, errorCallback)
     }
 
     fun sendMessage(sendParams: SendParams, callback: (Message) -> Unit, errorCallback: (Exception) -> Unit) {
@@ -108,8 +112,7 @@ internal class TelegramApiInteraction(val bot: Bot) {
             logger.error("Problems with api. Status code ${error.response.httpStatusCode}.")
             if (error.response.httpStatusCode == 404) {
                 logger.error("Check api key")
-            }
-            if (error.response.httpStatusCode == 409) {
+            } else if (error.response.httpStatusCode == 409) {
                 logger.error("Bot can be already started")
             }
         }
