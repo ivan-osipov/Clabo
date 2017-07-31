@@ -1,12 +1,14 @@
 package com.github.ivan_osipov.clabo.api.input
 
 import com.github.ivan_osipov.clabo.api.input.deserialization.strategies.AnnotationExclusionStrategy
+import com.github.ivan_osipov.clabo.api.model.EmptyMessage
 import com.github.ivan_osipov.clabo.api.model.Message
 import com.github.ivan_osipov.clabo.api.model.Update
 import com.github.ivan_osipov.clabo.api.model.User
 import com.github.kittinunf.fuel.core.ResponseDeserializable
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.JsonSyntaxException
 import com.google.gson.annotations.SerializedName
 
 open class ResponseDto<T: Any> {
@@ -41,7 +43,15 @@ class UpdatesDto : ResponseDto<List<Update>>() {
 
 class MessageDto : ResponseDto<Message>() {
     object deserializer : ResponseDeserializable<MessageDto> {
-        override fun deserialize(content: String) = gson.fromJson(content, MessageDto::class.java)!!
+        override fun deserialize(content: String): MessageDto? {
+            try {
+                return gson.fromJson(content, MessageDto::class.java)!!
+            } catch (e: JsonSyntaxException) {
+                return MessageDto().apply {
+                    result = EmptyMessage
+                }
+            }
+        }
     }
 }
 

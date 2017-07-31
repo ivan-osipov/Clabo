@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName
 /**
  * @see <a href="https://core.telegram.org/bots/api#message">docs</a>
  */
-class Message : Identifiable() {
+open class Message : Identifiable() {
     @SerializedName("message_id")
     override lateinit var id: String
 

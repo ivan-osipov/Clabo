@@ -245,12 +245,25 @@ open class CommonBotContext(val bot: Bot) {
         deleteMessage(this.chat.id, this.id)
     }
 
-    fun Message.editMessage(text: Text, init: EditMessageTextParams.() -> Unit) {
-        editMessage(text, init, {})
+    fun Message.editMessageAtChat(text: Text, init: EditMessageTextParams.() -> Unit) {
+        editMessageAtChat(text, init, {})
     }
 
-    fun Message.editMessage(text: Text, init: EditMessageTextParams.() -> Unit, successCallback: (Message) -> Unit) {
+    fun Message.editMessageAtChat(text: Text, init: EditMessageTextParams.() -> Unit, successCallback: (Message) -> Unit) {
         val editMessageTextParams = EditMessageTextParams(text)
+        editMessageTextParams.chatId = this.chat.id
+        editMessageTextParams.messageId = this.id
+        editMessageTextParams.init()
+        sender.send(editMessageTextParams, successCallback)
+    }
+
+    fun Message.editMessageAsInline(text: Text, inlineMessageId: MessageId, init: EditMessageTextParams.() -> Unit) {
+        editMessageAsInline(text, inlineMessageId, init, {})
+    }
+
+    fun Message.editMessageAsInline(text: Text, inlineMessageId: MessageId, init: EditMessageTextParams.() -> Unit, successCallback: (Message) -> Unit) {
+        val editMessageTextParams = EditMessageTextParams(text)
+        editMessageTextParams.inlineMessageId = inlineMessageId
         editMessageTextParams.init()
         sender.send(editMessageTextParams, successCallback)
     }

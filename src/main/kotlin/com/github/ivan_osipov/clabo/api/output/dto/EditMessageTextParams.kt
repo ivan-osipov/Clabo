@@ -1,5 +1,6 @@
 package com.github.ivan_osipov.clabo.api.output.dto
 
+import com.github.ivan_osipov.clabo.api.input.toJson
 import com.github.ivan_osipov.clabo.api.model.HasEditableInlineKeyboardMarkup
 import com.github.ivan_osipov.clabo.api.model.InlineKeyboardMarkup
 import com.github.ivan_osipov.clabo.api.model.ParseMode
@@ -32,7 +33,7 @@ class EditMessageTextParams(val text: String) : OutputParams, HasEditableInlineK
                 "text" to text,
                 "parse_mode" to parseMode,
                 "disable_web_page_preview" to disableWebPagePreview,
-                "reply_markup" to replyMarkup
+                "reply_markup" to replyMarkup.toJson()
         )
     }
 }

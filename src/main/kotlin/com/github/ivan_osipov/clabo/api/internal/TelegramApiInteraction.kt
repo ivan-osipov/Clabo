@@ -5,6 +5,7 @@ import com.github.ivan_osipov.clabo.api.input.MessageDto
 import com.github.ivan_osipov.clabo.api.input.ResponseDto
 import com.github.ivan_osipov.clabo.api.input.UpdatesDto
 import com.github.ivan_osipov.clabo.api.input.UserDto
+import com.github.ivan_osipov.clabo.api.model.EmptyMessage
 import com.github.ivan_osipov.clabo.api.model.Message
 import com.github.ivan_osipov.clabo.api.model.Update
 import com.github.ivan_osipov.clabo.api.model.User
@@ -95,7 +96,9 @@ internal class TelegramApiInteraction(val bot: Bot) {
                                            errorCallback: (Exception) -> Unit) {
         method(method).httpPost(params).responseObject(deserializer) { _, _, result ->
             result.fold({ okResult ->
-                callback(okResult.result)
+                if(okResult.result !is EmptyMessage) {
+                    callback(okResult.result)
+                }
             }) { error ->
                 processError(error)
                 errorCallback(error)

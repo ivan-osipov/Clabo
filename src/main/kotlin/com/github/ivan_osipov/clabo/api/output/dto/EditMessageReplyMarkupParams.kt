@@ -1,5 +1,6 @@
 package com.github.ivan_osipov.clabo.api.output.dto
 
+import com.github.ivan_osipov.clabo.api.input.toJson
 import com.github.ivan_osipov.clabo.api.model.HasEditableReplyMarkup
 import com.github.ivan_osipov.clabo.api.model.InlineKeyboardMarkup
 import com.github.ivan_osipov.clabo.utils.ChatId
@@ -23,7 +24,7 @@ class EditMessageReplyMarkupParams : OutputParams, HasEditableReplyMarkup<Inline
                 "chat_id" to chatId,
                 "message_id" to messageId,
                 "inline_message_id" to inlineMessageId,
-                "reply_markup" to replyMarkup
+                "reply_markup" to replyMarkup.toJson()
         )
     }
 
