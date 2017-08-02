@@ -2,19 +2,19 @@ package com.github.ivan_osipov.clabo.api.model
 
 import com.google.gson.annotations.SerializedName
 
-sealed class ReplyMarkup
+sealed class ReplyMarkup(val holder: HasEditableReplyMarkup<*>)
 
-class InlineKeyboardMarkup : ReplyMarkup() {
+class InlineKeyboardMarkup(holder: HasEditableReplyMarkup<*>) : ReplyMarkup(holder) {
     @SerializedName("inline_keyboard")
     var keyboard: MutableList<List<InlineKeyboardButton>> = ArrayList()
 }
 
-sealed class SelectiveReplyMarkup : ReplyMarkup() {
+sealed class SelectiveReplyMarkup(holder: HasEditableReplyMarkup<*>) : ReplyMarkup(holder) {
     @SerializedName("selective")
     var selective: Boolean = false
 }
 
-class ReplyKeyboardMarkup : SelectiveReplyMarkup() {
+class ReplyKeyboardMarkup(holder: HasEditableReplyMarkup<*>) : SelectiveReplyMarkup(holder) {
     @SerializedName("keyboard")
     var keyboard: MutableList<List<KeyboardButton>> = ArrayList()
 
@@ -25,12 +25,12 @@ class ReplyKeyboardMarkup : SelectiveReplyMarkup() {
     var oneTimeKeyboard: Boolean = false
 }
 
-class ReplyKeyboardRemove : SelectiveReplyMarkup() {
+class ReplyKeyboardRemove(holder: HasEditableReplyMarkup<*>) : SelectiveReplyMarkup(holder) {
     @SerializedName("remove_keyboard")
     val removeKeyboard: Boolean = true
 }
 
-class ForceReply : SelectiveReplyMarkup() {
+class ForceReply(holder: HasEditableReplyMarkup<*>) : SelectiveReplyMarkup(holder) {
     @SerializedName("force_reply")
     val forceReply: Boolean = true
 }

@@ -4,6 +4,7 @@ import com.github.ivan_osipov.clabo.api.input.toJson
 import com.github.ivan_osipov.clabo.api.model.HasEditableReplyMarkup
 import com.github.ivan_osipov.clabo.api.model.ParseMode
 import com.github.ivan_osipov.clabo.api.model.ReplyMarkup
+import com.github.ivan_osipov.clabo.utils.ChatId
 import com.google.gson.annotations.SerializedName
 
 class SendParams() : SyncByChatsOutputParams, HasEditableReplyMarkup<ReplyMarkup> {
@@ -15,7 +16,8 @@ class SendParams() : SyncByChatsOutputParams, HasEditableReplyMarkup<ReplyMarkup
 
     constructor(chatId: Long, text: String) : this(chatId.toString(), text)
 
-    lateinit var chatId: String
+    override lateinit var chatId: ChatId
+
     var chatIdAsLong
         get() = chatId.toLong()
         set(value) {

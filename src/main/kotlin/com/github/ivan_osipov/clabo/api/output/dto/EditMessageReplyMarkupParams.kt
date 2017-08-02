@@ -8,7 +8,7 @@ import com.github.ivan_osipov.clabo.utils.MessageId
 
 class EditMessageReplyMarkupParams : OutputParams, HasEditableReplyMarkup<InlineKeyboardMarkup> {
 
-    var chatId: ChatId? = null
+    override var chatId: ChatId? = null
 
     var messageId: MessageId? = null
 

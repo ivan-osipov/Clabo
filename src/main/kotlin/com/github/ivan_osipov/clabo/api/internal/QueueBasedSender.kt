@@ -16,7 +16,7 @@ import java.util.concurrent.Semaphore
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.collections.HashMap
 
-internal class QueueBasedSender(val apiInteraction: TelegramApiInteraction) {
+internal class QueueBasedSender(val apiInteraction: TelegramApiInteraction) : Sender {
 
     val messageProcessingSemaphore = Semaphore(0)
 
@@ -35,7 +35,7 @@ internal class QueueBasedSender(val apiInteraction: TelegramApiInteraction) {
         logger.debug("QueueBasedSender is initialized")
     }
 
-    fun send(message: SendParams, successCallback: (Message) -> Unit = {}) {
+    override fun send(message: SendParams, successCallback: (Message) -> Unit) {
         var chatOutput = chatOutputMap[message.chatId]
         if (chatOutput == null) {
             chatOutput = ChatInfo(message.chatId)
@@ -47,9 +47,9 @@ internal class QueueBasedSender(val apiInteraction: TelegramApiInteraction) {
         notifyWorker()
     }
 
-    fun send(outputParams: OutputParams, successCallback: (Message) -> Unit = {}) {
-        successCallbacks[outputParams] = successCallback
-        sharedOutputQueue.add(outputParams)
+    override fun send(message: OutputParams, successCallback: (Message) -> Unit) {
+        successCallbacks[message] = successCallback
+        sharedOutputQueue.add(message)
         logger.debug("New output message")
         notifyWorker()
     }

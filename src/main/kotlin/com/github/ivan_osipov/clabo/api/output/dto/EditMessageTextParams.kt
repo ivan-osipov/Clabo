@@ -9,7 +9,7 @@ import com.github.ivan_osipov.clabo.utils.MessageId
 
 class EditMessageTextParams(val text: String) : OutputParams, HasEditableInlineKeyboardMarkup {
 
-    var chatId: ChatId? = null
+    override var chatId: ChatId? = null
 
     var messageId: MessageId? = null
 

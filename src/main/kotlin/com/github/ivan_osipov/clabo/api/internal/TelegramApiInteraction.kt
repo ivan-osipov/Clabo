@@ -39,16 +39,16 @@ internal class TelegramApiInteraction(val bot: Bot) {
         invokeGetMethod(params.queryId, params.toListOfPairs(), UpdatesDto.deserializer, callback, errorCallback)
     }
 
-    fun sendMessage(sendParams: SendParams) {
-        invokePostMethod(SEND_MESSAGE, sendParams.toListOfPairs())
+    fun sendMessage(outputParams: OutputParams, successCallback: (Message) -> Unit = {}) {
+        sendMessage(outputParams, successCallback, {})
     }
 
-    fun sendMessage(outputParams: OutputParams, successfulCallback: (Message) -> Unit) {
-        invokePostMethod(outputParams.queryId, outputParams.toListOfPairs(), MessageDto.deserializer, successfulCallback, {})
+    fun sendMessage(outputParams: OutputParams, successCallback: (Message) -> Unit, errorCallback: (Exception) -> Unit) {
+        invokePostMethod(outputParams.queryId, outputParams.toListOfPairs(), MessageDto.deserializer, successCallback, errorCallback)
     }
 
-    fun sendMessage(outputParams: OutputParams, successfulCallback: (Message) -> Unit = {}, errorCallback: (Exception) -> Unit = {}) {
-        invokePostMethod(outputParams.queryId, outputParams.toListOfPairs(), MessageDto.deserializer, successfulCallback, errorCallback)
+    fun sendMessage(sendParams: SendParams, callback: (Message) -> Unit = {}) {
+        sendMessage(sendParams, callback, {})
     }
 
     fun sendMessage(sendParams: SendParams, callback: (Message) -> Unit, errorCallback: (Exception) -> Unit) {

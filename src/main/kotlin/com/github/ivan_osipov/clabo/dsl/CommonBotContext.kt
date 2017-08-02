@@ -1,6 +1,7 @@
 package com.github.ivan_osipov.clabo.dsl
 
 import com.github.ivan_osipov.clabo.api.internal.QueueBasedSender
+import com.github.ivan_osipov.clabo.api.internal.Sender
 import com.github.ivan_osipov.clabo.api.model.*
 import com.github.ivan_osipov.clabo.api.output.dto.*
 import com.github.ivan_osipov.clabo.dsl.config.BotConfigContext
@@ -10,6 +11,7 @@ import com.github.ivan_osipov.clabo.dsl.perks.inline.InlineModeContext
 import com.github.ivan_osipov.clabo.state.chat.ChatContext
 import com.github.ivan_osipov.clabo.state.chat.ChatInteractionContext
 import com.github.ivan_osipov.clabo.state.chat.ChatStateStore
+import com.github.ivan_osipov.clabo.utils.CallbackData
 import com.github.ivan_osipov.clabo.utils.ChatId
 import com.github.ivan_osipov.clabo.utils.MessageId
 import com.github.ivan_osipov.clabo.utils.Text
@@ -27,9 +29,9 @@ open class CommonBotContext(val bot: Bot) {
 
     var chatInteractionContext: ChatInteractionContext<*, *>? = null
 
-    var callbackQueryProcessors = HashMap<String, (CallbackQuery, Update) -> Unit>()
+    var callbackQueryProcessors = HashMap<ChatId, MutableMap<CallbackData, (CallbackQuery, Update) -> Unit>>()
 
-    private val sender = QueueBasedSender(bot.api)
+    private val sender: Sender = QueueBasedSender(bot.api)
 
     protected val logger: Logger = LoggerFactory.getLogger(CommonBotContext::class.java)
 
@@ -110,6 +112,10 @@ open class CommonBotContext(val bot: Bot) {
         }
     }
 
+    infix fun Message?.reply(text: Text) {
+        reply(text, {})
+    }
+
     fun Message?.reply(text: Text, init: SendParams.() -> Unit) {
         reply(text, init, {})
     }
@@ -121,11 +127,11 @@ open class CommonBotContext(val bot: Bot) {
     }
 
     fun SendParams.replyKeyboard(init: ReplyKeyboardMarkup.() -> Unit) {
-        replyMarkup = ReplyKeyboardMarkup().apply(init)
+        replyMarkup = ReplyKeyboardMarkup(this).apply(init)
     }
 
     fun SendParams.replyKeyboardRemove(selective: Boolean = false) {
-        replyMarkup = ReplyKeyboardRemove().apply {
+        replyMarkup = ReplyKeyboardRemove(this).apply {
             this.selective = selective
         }
     }
@@ -150,7 +156,12 @@ open class CommonBotContext(val bot: Bot) {
             = abstractButton(text) {
         this.callbackData = callbackData
         if(callbackQueryProcessor != null) {
-            callbackQueryProcessors.put(callbackData, callbackQueryProcessor)
+            val chatId = this@button.holder.chatId
+            logger.debug("Saved callbackData: $callbackData for $chatId")
+            if(chatId != null) {
+                callbackQueryProcessors.computeIfAbsent(chatId, { HashMap() })
+                callbackQueryProcessors[chatId]!!.put(callbackData, callbackQueryProcessor)
+            }
         }
     }
 
@@ -294,7 +305,7 @@ open class CommonBotContext(val bot: Bot) {
     }
 
     fun HasEditableReplyMarkup<in InlineKeyboardMarkup>.inlineKeyboard(init: InlineKeyboardMarkup.() -> Unit) {
-        replyMarkup = InlineKeyboardMarkup().apply(init)
+        replyMarkup = InlineKeyboardMarkup(this).apply(init)
     }
 
     fun <T: ReplyMarkup> HasEditableReplyMarkup<T>.emptyReplyMarkup() {
