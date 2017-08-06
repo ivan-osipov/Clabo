@@ -60,7 +60,7 @@ internal class ContextProcessor(val commonBotContext: CommonBotContext) {
         chatInteractionContext?.let {
             chatStateStore = it.chatStateStore
         }
-        val callbackQueryProcessors = commonBotContext.callbackQueryProcessors
+        val callbackDataRegister = commonBotContext.callbackDataContext.register
 
         val executionBatch = ExecutionBatch()
         for (update in updates) {
@@ -114,17 +114,16 @@ internal class ContextProcessor(val commonBotContext: CommonBotContext) {
                 }
             }
             val callbackQuery = update.callbackQuery
-            if(callbackQuery != null) {
+            if (callbackQuery != null) {
                 val callbackQueryData = callbackQuery.data
-                if(callbackQueryData != null) {
+                if (callbackQueryData != null) {
                     val chatId = callbackQuery.message?.chat?.id
                     logger.debug("Processing callbackData: $callbackQueryData for $chatId")
-                    callbackQueryProcessors[chatId]?.let { callbackProcessors ->
-                        val callbackProcessor = callbackProcessors[callbackQueryData]
-                        logger.debug("Callback processor is ${if(callbackProcessor != null) "found" else "not found"}")
-                        if(callbackProcessor != null) {
+                    callbackDataRegister[callbackQueryData]?.let { callbackDaraProcessors ->
+                        logger.debug("For $callbackQueryData found ${callbackDaraProcessors.size} processors")
+                        for (callbackDaraProcessor in callbackDaraProcessors) {
                             executionBatch.callbacks.add {
-                                callbackProcessor.invoke(callbackQuery, update)
+                                callbackDaraProcessor(callbackQuery, update)
                             }
                         }
                     }
