@@ -100,6 +100,10 @@ open class CommonBotContext(val bot: Bot) {
         inlineModeContext.init()
     }
 
+    fun send(sendParams: SendParams, successCallback: (Message) -> Unit = {}) {
+        sender.send(sendParams, successCallback)
+    }
+
     fun send(text: Text, chatId: ChatId, init: SendParams.() -> Unit = {}) {
         send(text, chatId, init, {})
     }
@@ -162,6 +166,12 @@ open class CommonBotContext(val bot: Bot) {
         if(callbackQueryProcessor != null) {
             callbackDataContext.register(callbackData, callbackQueryProcessor)
         }
+    }
+
+    fun InlineKeyboardMarkup.urlButton(text: Text,
+                                    url: String)
+            = abstractButton(text) {
+        this.url = url
     }
 
     fun InlineKeyboardMarkup.switchInlineQueryButton(text: Text, switchInlineQuery: String) = abstractButton(text) {

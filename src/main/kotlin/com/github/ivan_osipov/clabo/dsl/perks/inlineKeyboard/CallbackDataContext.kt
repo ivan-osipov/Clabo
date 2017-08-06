@@ -10,6 +10,10 @@ class CallbackDataContext {
 
     val register: Multimap<String, (CallbackQuery, Update) -> Unit> = ArrayListMultimap.create()
 
+    fun clean() {
+        register.clear()
+    }
+
     fun register(data: String, queryCallback : (CallbackQuery) -> Unit) {
         register[data] = { query, _ -> queryCallback(query) }
     }

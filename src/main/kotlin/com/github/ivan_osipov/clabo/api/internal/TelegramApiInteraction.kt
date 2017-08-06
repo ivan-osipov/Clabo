@@ -19,6 +19,7 @@ import com.github.kittinunf.fuel.httpPost
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 
 internal class TelegramApiInteraction(val bot: Bot) {
 
@@ -121,6 +122,10 @@ internal class TelegramApiInteraction(val bot: Bot) {
         }
         logger.error("Problem with request", error.exception)
         logger.error(String(error.errorData))
+        if(error.exception is UnknownHostException) {
+            logger.error("Check network connection")
+            System.exit(1)
+        }
     }
 
     private fun method(method: String): String {

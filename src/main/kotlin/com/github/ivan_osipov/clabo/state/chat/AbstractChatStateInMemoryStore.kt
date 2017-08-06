@@ -7,13 +7,13 @@ abstract class AbstractChatStateInMemoryStore<T : ChatState<C>, C : ChatContext>
     protected val chatStateMap: MutableMap<ChatId, T> = HashMap()
 
     override fun updateContext(chatId: ChatId, chatContext: C) {
-        chatStateMap.putIfAbsent(chatId, createChatState(chatId))
+        chatStateMap.computeIfAbsent(chatId) { createChatState(chatId) }
         val state = chatStateMap[chatId]!!
         state.context = chatContext
     }
 
     override fun getChatContext(chatId: ChatId) : C {
-        chatStateMap.putIfAbsent(chatId, createChatState(chatId))
+        chatStateMap.computeIfAbsent(chatId) { createChatState(chatId) }
         val state = chatStateMap[chatId]!!
         return state.context
     }

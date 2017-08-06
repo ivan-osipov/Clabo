@@ -7,11 +7,8 @@ import com.github.ivan_osipov.clabo.api.model.Update
 import com.github.ivan_osipov.clabo.state.chat.ChatContext
 import com.github.ivan_osipov.clabo.state.chat.ChatStateStore
 import com.github.ivan_osipov.clabo.utils.isCommand
-import com.google.common.collect.ArrayListMultimap
-import com.google.common.collect.Multimap
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.util.*
 import java.util.concurrent.Semaphore
 
 internal class ContextProcessor(val commonBotContext: CommonBotContext) {
@@ -56,10 +53,7 @@ internal class ContextProcessor(val commonBotContext: CommonBotContext) {
         val commandsContext = commonBotContext.commandsContext
         val inlineModeContext = commonBotContext.inlineModeContext
         val chatInteractionContext = commonBotContext.chatInteractionContext
-        var chatStateStore: ChatStateStore<*>? = null
-        chatInteractionContext?.let {
-            chatStateStore = it.chatStateStore
-        }
+        val chatStateStore: ChatStateStore<*>? = chatInteractionContext?.chatStateStore
         val callbackDataRegister = commonBotContext.callbackDataContext.register
 
         val executionBatch = ExecutionBatch()
