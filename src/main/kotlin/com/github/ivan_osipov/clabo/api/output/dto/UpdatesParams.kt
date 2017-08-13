@@ -3,7 +3,7 @@ package com.github.ivan_osipov.clabo.api.output.dto
 
 data class UpdatesParams(var offset: Long? = null,
                     var limit: Short? = null,
-                    var timeout: Long = 60000,
+                    var timeout: Long? = null,
                     var allowedUpdates: List<String>? = null) : OutputParams {
 
     override val queryId: String

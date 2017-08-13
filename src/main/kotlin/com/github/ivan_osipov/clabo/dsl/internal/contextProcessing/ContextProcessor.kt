@@ -1,5 +1,6 @@
 package com.github.ivan_osipov.clabo.dsl.internal.contextProcessing
 
+import com.github.ivan_osipov.clabo.api.internal.TelegramApiInteraction
 import com.github.ivan_osipov.clabo.api.model.Message
 import com.github.ivan_osipov.clabo.dsl.CommonBotContext
 import com.github.ivan_osipov.clabo.dsl.perks.command.Command
@@ -11,15 +12,12 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.concurrent.Semaphore
 
-internal class ContextProcessor(val commonBotContext: CommonBotContext) {
+internal class ContextProcessor(val commonBotContext: CommonBotContext, private val api: TelegramApiInteraction) {
 
     var lastUpdateId: Long = 0
     val logger: Logger = LoggerFactory.getLogger(ContextProcessor::class.java)
 
     fun run() {
-        val bot = commonBotContext.bot
-        val api = bot.api
-
         val lock: Semaphore = Semaphore(0)
 
         while (true) {
@@ -112,9 +110,9 @@ internal class ContextProcessor(val commonBotContext: CommonBotContext) {
                 val callbackQueryData = callbackQuery.data
                 if (callbackQueryData != null) {
                     val chatId = callbackQuery.message?.chat?.id
-                    logger.debug("Processing callbackData: $callbackQueryData for $chatId")
+                    logger.trace("Processing callbackData: $callbackQueryData for $chatId")
                     callbackDataRegister[callbackQueryData]?.let { callbackDaraProcessors ->
-                        logger.debug("For $callbackQueryData found ${callbackDaraProcessors.size} processors")
+                        logger.trace("For $callbackQueryData found ${callbackDaraProcessors.size} processors")
                         for (callbackDaraProcessor in callbackDaraProcessors) {
                             executionBatch.callbacks.add {
                                 callbackDaraProcessor(callbackQuery, update)

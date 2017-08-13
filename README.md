@@ -11,7 +11,7 @@ Clabo is DSL (Domain-Specific Language) for [Kotlin](https://kotlinlang.org) whi
 The easiest sample of bot that you can implement below. You should change 'apiKey' with your value
 ```kotlin
 fun main(args: Array<String>) {
-    bot("apiKey") longPool {
+    bot("apiKey") longPooling {
         onStart { command ->
             val message = command.update.message!!
             message answer "Hi, ${message.from}"

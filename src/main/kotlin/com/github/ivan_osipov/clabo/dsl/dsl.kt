@@ -1,7 +1,9 @@
 package com.github.ivan_osipov.clabo.dsl
 
-import com.github.ivan_osipov.clabo.api.internal.TelegramApiInteraction
-import com.github.ivan_osipov.clabo.dsl.internal.contextProcessing.ContextProcessor
+import com.github.ivan_osipov.clabo.api.internal.SyncTelegramApiInteraction
+import com.github.ivan_osipov.clabo.dsl.config.BotConfig
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.io.FileInputStream
 import java.io.InputStream
 import java.lang.IllegalStateException
@@ -10,23 +12,29 @@ import kotlin.reflect.KClass
 
 class Bot internal constructor(){
     lateinit var apiKey: String
-    lateinit var botName: String
     var host: String = "https://api.telegram.org"
 
-    internal val api = TelegramApiInteraction(this)
-    internal val telegramApiUrl: String by lazy { "$host/bot$apiKey/" }
+    private val telegramApiUrl: String by lazy { "$host/bot$apiKey/" }
 
-    infix fun longPool(init: CommonBotContext.() -> Unit) {
-        api.getMe { me ->
-            this.botName = me.username ?: "undefined"
-            println("Personal bot: ${me.firstName} (${this.botName}) started")
+    private val logger: Logger = LoggerFactory.getLogger(Bot::class.java)
 
-            val context = CommonBotContext(this)
-            context.init()
+    infix fun longPooling(init: CommonBotContext.() -> Unit)  = LongPoolingInteraction(telegramApiUrl).execute(init)
 
-            val contextProcessor = ContextProcessor(context)
-            contextProcessor.run()
-        }
+    private fun Interaction.execute(init: CommonBotContext.() -> Unit) {
+        val botName = init()
+        val context = CommonBotContext(botName)
+        context.init()
+        run(context)
+    }
+
+    private fun init() : String {
+        val syncApiInteraction = SyncTelegramApiInteraction(telegramApiUrl)
+        val user = syncApiInteraction.getMe()
+        val botName = user.username ?: "undefined"
+        check(botName.isNotEmpty(), { "Bot name is not found" })
+        check(apiKey.isNotEmpty(), { "Api key is not defined" })
+        logger.info("Long pooling bot: ${user.firstName} ($botName) started")
+        return botName
     }
 }
 

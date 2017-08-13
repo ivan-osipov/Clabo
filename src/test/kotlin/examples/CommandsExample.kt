@@ -4,13 +4,14 @@ import com.github.ivan_osipov.clabo.dsl.bot
 import com.github.ivan_osipov.clabo.dsl.props
 
 fun main(args: Array<String>) {
-    bot(props(Main::class, "bot.properties")) longPool {
+    bot(props(Main::class, "bot.properties")) longPooling {
 
         configure {
             helloMessage("Hello! I'm Bot based on commands. Write '/'")
             updates {
                 timeout = 3000
             }
+            async = true
         }
 
         commands {

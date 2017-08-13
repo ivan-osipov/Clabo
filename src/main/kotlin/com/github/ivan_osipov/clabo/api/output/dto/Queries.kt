@@ -14,4 +14,8 @@ object Queries {
 
     val EDIT_MESSAGE_REPLY_MARKUP = "editMessageReplyMarkup"
 
+    val GET_ME: String = "getMe"
+
+    val SEND_MESSAGE: String = "sendMessage"
+
 }
