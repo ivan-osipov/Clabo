@@ -2,12 +2,27 @@
 [![license](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0)
 [![Build Status](https://travis-ci.org/ivan-osipov/Clabo.svg?branch=master)](https://travis-ci.org/ivan-osipov/Clabo) 
 [![Chat](https://img.shields.io/badge/any%20questions-telegram-2370bc.svg)](https://t.me/joinchat/D2ZdJQ57kOIU7APYaDb2eg) 
-
+[![Maven Central](https://img.shields.io/maven-central/v/com.github.ivan_osipov/clabo.svg)](https://search.maven.org/#artifactdetails%7Ccom.github.ivan_osipov%7Cclabo%7C0.0.1%7Cjar)
 
 Clabo is DSL (Domain-Specific Language) for [Kotlin](https://kotlinlang.org) which gives you the easiest way to create 
 [bot for Telegram messenger](https://core.telegram.org/bots).  
 
 ## Usage
+If you use Gradle, you should to add the follow config
+```gradle
+repositories {
+    mavenCentral()
+    jcenter() //for used fuel lib
+}
+dependencies {
+    compile("org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version", //probably, you have the kotlin stdlib dependency
+            'com.github.ivan_osipov:clabo:0.0.1', //the clabo dependency
+            'ch.qos.logback:logback-classic:1.2.3', //any implementation of logging for slf4j
+            'ch.qos.logback:logback-core:1.2.3')
+}
+
+```
+
 The easiest sample of bot that you can implement below. You should change 'apiKey' with your value
 ```kotlin
 fun main(args: Array<String>) {
