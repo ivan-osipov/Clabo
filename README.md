@@ -8,7 +8,7 @@ Clabo is DSL (Domain-Specific Language) for [Kotlin](https://kotlinlang.org) whi
 [bot for Telegram messenger](https://core.telegram.org/bots).  
 
 ## Usage
-If you use Gradle, you should to add the follow config
+If you use Gradle, you should add the follow config
 ```gradle
 repositories {
     mavenCentral()
