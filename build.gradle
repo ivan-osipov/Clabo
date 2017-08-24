@@ -1,5 +1,6 @@
-group 'com.github.ivan-osipov'
-version '0.0.1-SNAPSHOT'
+group 'com.github.ivan_osipov'
+def releaseVersion = '0.0.2'
+version "$releaseVersion-SNAPSHOT"
 
 buildscript {
     ext.kotlin_version = '1.1.3-2'
@@ -13,6 +14,8 @@ buildscript {
 
 apply plugin: 'kotlin'
 apply plugin: 'maven-publish'
+apply plugin: 'signing'
+apply plugin: 'maven'
 
 repositories {
     jcenter()
@@ -32,21 +35,81 @@ dependencies {
 
 }
 
-task fatJar(type: Jar) {
-    baseName = project.name + '-all'
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-    with jar
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
 }
 
-task sourcesJar(type: Jar, dependsOn: classes) {
+task sourcesJar(type: Jar) {
     classifier = 'sources'
     from sourceSets.main.allSource
 }
 
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+signing {
+    sign configurations.archives
+}
+
+task fatJar(type: Jar) {
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+javadocJar.dependsOn = [fatJar]
+signArchives.dependsOn = [fatJar]
+
 publishing {
     publications {
-        main(MavenPublication) {
-            artifact jar
+        release(MavenPublication) {
+            version = releaseVersion
+            artifact fatJar
+        }
+    }
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            pom.project {
+                name "${project.group}:${archivesBaseName}"
+                packaging 'jar'
+                description 'Kotlin library for the easiest way to develop Telegram bot based on flexible DSL'
+                url 'https://clabo.i-osipov.ru'
+
+                scm {
+                    connection 'scm:git:git://github.com/ivan-osipov/Clabo.git'
+                    developerConnection 'scm:git:ssh://github.com/ivan-osipov/Clabo.git'
+                    url 'https://github.com/ivan-osipov/Clabo/tree/master'
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'ivan-osipov'
+                        name 'Ivan Osipov'
+                        email 'i.osipov.develop@gmail.com'
+                    }
+                }
+            }
         }
     }
 }
