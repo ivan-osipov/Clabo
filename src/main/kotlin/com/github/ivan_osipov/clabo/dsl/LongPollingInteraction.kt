@@ -8,9 +8,9 @@ import com.github.ivan_osipov.clabo.dsl.internal.contextProcessing.ContextProces
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class LongPoolingInteraction(val telegramApiUrl: String): Interaction {
+class LongPollingInteraction(val telegramApiUrl: String): Interaction {
     internal lateinit var api: TelegramApiInteraction
-    private val logger: Logger = LoggerFactory.getLogger(LongPoolingInteraction::class.java)
+    private val logger: Logger = LoggerFactory.getLogger(LongPollingInteraction::class.java)
 
     override fun run(context: CommonBotContext) {
         api = if(context.configContext.async) {
@@ -22,7 +22,7 @@ class LongPoolingInteraction(val telegramApiUrl: String): Interaction {
 
         api.getMe { me ->
             val botName = me.username ?: "undefined"
-            logger.info("Long pooling bot: ${me.firstName} ($botName) started")
+            logger.info("Long polling bot: ${me.firstName} ($botName) started")
 
             val contextProcessor = ContextProcessor(context, api)
             contextProcessor.run()

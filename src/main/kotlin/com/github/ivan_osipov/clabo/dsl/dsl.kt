@@ -1,9 +1,6 @@
 package com.github.ivan_osipov.clabo.dsl
 
 import com.github.ivan_osipov.clabo.api.internal.SyncTelegramApiInteraction
-import com.github.ivan_osipov.clabo.dsl.config.BotConfig
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.io.FileInputStream
 import java.io.InputStream
 import java.lang.IllegalStateException
@@ -16,9 +13,7 @@ class Bot internal constructor(){
 
     private val telegramApiUrl: String by lazy { "$host/bot$apiKey/" }
 
-    private val logger: Logger = LoggerFactory.getLogger(Bot::class.java)
-
-    infix fun longPooling(init: CommonBotContext.() -> Unit)  = LongPoolingInteraction(telegramApiUrl).execute(init)
+    infix fun longPolling(init: CommonBotContext.() -> Unit)  = LongPollingInteraction(telegramApiUrl).execute(init)
 
     private fun Interaction.execute(init: CommonBotContext.() -> Unit) {
         val botName = init()
@@ -33,7 +28,6 @@ class Bot internal constructor(){
         val botName = user.username ?: "undefined"
         check(botName.isNotEmpty(), { "Bot name is not found" })
         check(apiKey.isNotEmpty(), { "Api key is not defined" })
-        logger.info("Long pooling bot: ${user.firstName} ($botName) started")
         return botName
     }
 }
