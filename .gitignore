@@ -2,4 +2,5 @@
 .gradle/
 .idea/
 build/
+gradle.properties
 /src/test/resources/examples/bot.properties
