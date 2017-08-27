@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
-internal abstract class TelegramApiInteraction(val baseUrl: String) {
+internal abstract class TelegramApiInteraction(private val baseUrl: String) {
 
     private val logger: Logger = LoggerFactory.getLogger(TelegramApiInteraction::class.java)
 
@@ -43,7 +43,7 @@ internal abstract class TelegramApiInteraction(val baseUrl: String) {
         sendMessage(outputParams, successCallback, {})
     }
 
-    fun sendMessage(outputParams: OutputParams, successCallback: (Message) -> Unit, errorCallback: (Exception) -> Unit) {
+    private fun sendMessage(outputParams: OutputParams, successCallback: (Message) -> Unit, errorCallback: (Exception) -> Unit) {
         invokePostMethod(outputParams.queryId, outputParams.toListOfPairs(), MessageDto.deserializer, successCallback, errorCallback)
     }
 
@@ -51,18 +51,18 @@ internal abstract class TelegramApiInteraction(val baseUrl: String) {
         sendMessage(sendParams, callback, {})
     }
 
-    fun sendMessage(sendParams: SendParams, callback: (Message) -> Unit, errorCallback: (Exception) -> Unit) {
+    private fun sendMessage(sendParams: SendParams, callback: (Message) -> Unit, errorCallback: (Exception) -> Unit) {
         invokePostMethod(Queries.SEND_MESSAGE, sendParams.toListOfPairs(), MessageDto.deserializer, callback, errorCallback)
     }
 
-    fun <T : Any> invokeGetMethod(method: String,
+    private fun <T : Any> invokeGetMethod(method: String,
                                   deserializer: ResponseDeserializable<ResponseDto<T>>,
                                   callback: (T) -> Unit = {},
                                   errorCallback: (Exception) -> Unit = {}) {
         invokeGetMethod(method, null, deserializer, callback, errorCallback)
     }
 
-    fun <T : Any> invokePostMethod(method: String,
+    private fun <T : Any> invokePostMethod(method: String,
                                    params: List<Pair<String, *>>? = null,
                                    deserializer: ResponseDeserializable<ResponseDto<T>>,
                                    successCallback: (T) -> Unit,
@@ -70,7 +70,7 @@ internal abstract class TelegramApiInteraction(val baseUrl: String) {
         invokeHttpMethod({ method(method).httpPost(params) }, deserializer, successCallback, errorCallback)
     }
 
-    fun <T : Any> invokeGetMethod(method: String,
+    private fun <T : Any> invokeGetMethod(method: String,
                                   params: List<Pair<String, *>>? = null,
                                   deserializer: ResponseDeserializable<ResponseDto<T>>,
                                   successCallback: (T) -> Unit,
@@ -79,7 +79,7 @@ internal abstract class TelegramApiInteraction(val baseUrl: String) {
     }
 
 
-    fun <T : Any> invokeHttpMethod(methodSupplier: () -> Request,
+    private fun <T : Any> invokeHttpMethod(methodSupplier: () -> Request,
                                    deserializer: ResponseDeserializable<ResponseDto<T>>,
                                    callback: (T) -> Unit,
                                    errorCallback: (Exception) -> Unit) {
