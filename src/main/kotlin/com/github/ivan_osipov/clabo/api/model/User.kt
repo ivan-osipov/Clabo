@@ -17,4 +17,7 @@ class User : Identifiable() {
 
     @SerializedName("language_code")
     var languageCode: String? = null
+
+    @SerializedName("is_bot")
+    var isBot: Boolean = false
 }

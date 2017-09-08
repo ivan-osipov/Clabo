@@ -49,7 +49,19 @@ class Chat: Identifiable() {
         }
 
     @SerializedName("all_members_are_administrators")
-    val allMembersAreAdministrators: Boolean = false
+    var allMembersAreAdministrators: Boolean = false
+
+    @SerializedName("photo")
+    var photo: ChatPhoto? = null
+
+    @SerializedName("description")
+    var description: String? = null
+
+    @SerializedName("invite_link")
+    var inviteLink: String? = null
+
+    @SerializedName("pinned_message")
+    var pinnedMessage: Message? = null
 
     val type: Type
         get() = Type.valueOf(_type)

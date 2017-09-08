@@ -31,6 +31,9 @@ open class Message : Identifiable() {
     @SerializedName("forward_from_message_id")
     var forwardFromMessageId: String? = null
 
+    @SerializedName("forward_signature")
+    var forwardSignature: String? = null
+
     @SerializedName("forward_date")
     var forwardDate: Long? = null
 
@@ -39,6 +42,9 @@ open class Message : Identifiable() {
 
     @SerializedName("edit_date")
     var editDate: Long? = null
+
+    @SerializedName("author_signature")
+    var authorSignature: String? = null
 
     @SerializedName("text")
     var text: String? = null
