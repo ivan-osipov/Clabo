@@ -1,6 +1,6 @@
 package com.github.ivan_osipov.clabo.dsl
 
-import com.github.ivan_osipov.clabo.api.internal.SyncTelegramApiInteraction
+import com.github.ivan_osipov.clabo.api.internal.TelegramApiInteraction
 import java.io.FileInputStream
 import java.io.InputStream
 import java.lang.IllegalStateException
@@ -23,8 +23,8 @@ class Bot internal constructor(){
     }
 
     private fun init() : String {
-        val syncApiInteraction = SyncTelegramApiInteraction(telegramApiUrl)
-        val user = syncApiInteraction.getMe()
+        val apiInteraction = TelegramApiInteraction(telegramApiUrl)
+        val user = apiInteraction.getMe()
         val botName = user.username ?: "undefined"
         check(botName.isNotEmpty(), { "Bot name is not found" })
         check(apiKey.isNotEmpty(), { "Api key is not defined" })

@@ -1,10 +1,7 @@
 package com.github.ivan_osipov.clabo.api.input
 
 import com.github.ivan_osipov.clabo.api.input.deserialization.strategies.AnnotationExclusionStrategy
-import com.github.ivan_osipov.clabo.api.model.EmptyMessage
-import com.github.ivan_osipov.clabo.api.model.Message
-import com.github.ivan_osipov.clabo.api.model.Update
-import com.github.ivan_osipov.clabo.api.model.User
+import com.github.ivan_osipov.clabo.api.model.*
 import com.github.kittinunf.fuel.core.ResponseDeserializable
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -51,6 +48,14 @@ class MessageDto : ResponseDto<Message>() {
                     result = EmptyMessage
                 }
             }
+        }
+    }
+}
+
+class ChatDto : ResponseDto<Chat>() {
+    object deserializer : ResponseDeserializable<ChatDto> {
+        override fun deserialize(content: String): ChatDto? {
+            return gson.fromJson(content, ChatDto::class.java)
         }
     }
 }

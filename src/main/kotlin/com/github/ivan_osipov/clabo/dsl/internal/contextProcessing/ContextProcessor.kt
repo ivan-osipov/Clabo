@@ -10,37 +10,28 @@ import com.github.ivan_osipov.clabo.state.chat.ChatStateStore
 import com.github.ivan_osipov.clabo.utils.isCommand
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.util.concurrent.Semaphore
 
 internal class ContextProcessor(val commonBotContext: CommonBotContext, private val api: TelegramApiInteraction) {
 
-    var lastUpdateId: Long = 0
-    val logger: Logger = LoggerFactory.getLogger(ContextProcessor::class.java)
+    private var lastUpdateId: Long = 0
+    private val logger: Logger = LoggerFactory.getLogger(ContextProcessor::class.java)
 
     fun run() {
-        val lock: Semaphore = Semaphore(0)
-
         while (true) {
             try {
                 val updateParams = api.defaultUpdatesParams.copy()
 
                 updateParams.offset = lastUpdateId
 
-                api.getUpdates(updateParams, { updates ->
+                val updates = api.getUpdates(updateParams)
 
-                    val executionBatch = collectExecutionBatch(updates)
+                if(updates.isEmpty()) continue
 
-                    processExecutionBatch(executionBatch)
+                val executionBatch = collectExecutionBatch(updates)
 
-                    lock.release()
-                }, {
-                    lock.release()
-                })
-
-                lock.acquire()
+                processExecutionBatch(executionBatch)
             } catch (e: Exception) {
                 logger.error("Getting updates error", e)
-                lock.release()
             } finally {
                 Thread.sleep(1)
             }

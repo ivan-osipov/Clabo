@@ -11,7 +11,6 @@ fun main(args: Array<String>) {
             updates {
                 timeout = 3000
             }
-            async = true
         }
 
         commands {

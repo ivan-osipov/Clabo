@@ -6,6 +6,8 @@ typealias CallbackData = String
 
 typealias MessageId = String
 
+typealias FileId = String
+
 typealias CallbackQueryId = String
 
 typealias MsgCode = String

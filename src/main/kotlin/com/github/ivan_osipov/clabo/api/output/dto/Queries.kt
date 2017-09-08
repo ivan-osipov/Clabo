@@ -18,4 +18,6 @@ object Queries {
 
     val SEND_MESSAGE: String = "sendMessage"
 
+    val GET_CHAT: String = "getChat"
+
 }

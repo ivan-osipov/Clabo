@@ -1,6 +1,7 @@
 package com.github.ivan_osipov.clabo.dsl
 
-import com.github.ivan_osipov.clabo.api.internal.Sender
+import com.github.ivan_osipov.clabo.api.internal.IncomingInteractionApi
+import com.github.ivan_osipov.clabo.api.internal.OutgoingInteractionApi
 import com.github.ivan_osipov.clabo.api.model.*
 import com.github.ivan_osipov.clabo.api.output.dto.*
 import com.github.ivan_osipov.clabo.dsl.config.BotConfig
@@ -20,7 +21,9 @@ import org.slf4j.LoggerFactory
 
 open class CommonBotContext(val botName: String) {
 
-    lateinit var sender: Sender
+    lateinit var sender: OutgoingInteractionApi
+
+    lateinit var receiver: IncomingInteractionApi
 
     val configContext = BotConfig()
 
@@ -34,7 +37,7 @@ open class CommonBotContext(val botName: String) {
 
     var chatInteractionContext: ChatInteractionContext<*, *>? = null
 
-    protected val logger: Logger = LoggerFactory.getLogger(CommonBotContext::class.java)
+    private val logger: Logger = LoggerFactory.getLogger(CommonBotContext::class.java)
 
     fun <T : ChatStateStore<C>, C : ChatContext> chatting(chatStateStore: T,
                                                           init: ChatInteractionContext<T, C>.() -> Unit) {
@@ -53,7 +56,7 @@ open class CommonBotContext(val botName: String) {
         onStart {
             it.update.message?.chat?.id?.let { chatId: ChatId ->
                 helloMessageSendParams.chatId = chatId
-                sender.send(helloMessageSendParams)
+                sender.sendMessageAsync(helloMessageSendParams)
             }
         }
     }
@@ -94,7 +97,7 @@ open class CommonBotContext(val botName: String) {
     }
 
     fun send(sendParams: SendParams, successCallback: (Message) -> Unit = {}) {
-        sender.send(sendParams, successCallback)
+        sender.sendMessageAsync(sendParams, successCallback)
     }
 
     fun send(text: Text, chatId: ChatId, init: SendParams.() -> Unit = {}) {
@@ -104,7 +107,7 @@ open class CommonBotContext(val botName: String) {
     fun send(text: Text, chatId: ChatId, init: SendParams.() -> Unit, successCallback: (Message) -> Unit = {}) {
         val sendParams = SendParams(chatId, text)
         sendParams.init()
-        sender.send(sendParams, successCallback)
+        sender.sendMessageAsync(sendParams, successCallback)
     }
 
     fun onStartReply(text: Text, init: SendParams.() -> Unit) {
@@ -124,7 +127,7 @@ open class CommonBotContext(val botName: String) {
     fun Message?.reply(text: Text, init: SendParams.() -> Unit, successCallback: (Message) -> Unit = {}) {
         val sendParams = SendParams(this!!.chat.id, text)
         sendParams.init()
-        sender.send(sendParams, successCallback)
+        sender.sendMessageAsync(sendParams, successCallback)
     }
 
     fun SendParams.replyKeyboard(init: ReplyKeyboardMarkup.() -> Unit) {
@@ -212,18 +215,18 @@ open class CommonBotContext(val botName: String) {
             logger.warn("Trying answer but message is undefined")
         } else {
             val sendParams = SendParams(this.chat.id, text)
-            sender.send(sendParams)
+            sender.sendMessageAsync(sendParams)
         }
     }
 
     infix fun CallbackQuery.answer(init: AnswerCallbackQueryParams.() -> Unit) {
         val callbackQueryAnswer = makeAnswer().apply(init)
-        sender.send(callbackQueryAnswer)
+        sender.sendMessageAsync(callbackQueryAnswer)
     }
 
     fun CallbackQuery.emptyAnswer() {
         val callbackQueryAnswer = makeAnswer()
-        sender.send(callbackQueryAnswer)
+        sender.sendMessageAsync(callbackQueryAnswer)
     }
 
     fun CallbackQuery.makeAnswer(): AnswerCallbackQueryParams {
@@ -236,7 +239,7 @@ open class CommonBotContext(val botName: String) {
         } else {
             val sendParams = SendParams(this.chat.id, text)
             sendParams.parseMode = ParseMode.MARKDOWN
-            sender.send(sendParams)
+            sender.sendMessageAsync(sendParams)
         }
     }
 
@@ -246,12 +249,12 @@ open class CommonBotContext(val botName: String) {
         } else {
             val sendParams = SendParams(this.chat.id, text)
             sendParams.parseMode = ParseMode.HTML
-            sender.send(sendParams)
+            sender.sendMessageAsync(sendParams)
         }
     }
 
     fun CommonBotContext.deleteMessage(chatId: ChatId, messageId: MessageId) {
-        sender.send(DeleteMessageParams(chatId, messageId))
+        sender.sendMessageAsync(DeleteMessageParams(chatId, messageId))
     }
 
     fun Message.deleteMessage() {
@@ -267,7 +270,7 @@ open class CommonBotContext(val botName: String) {
         editMessageTextParams.chatId = this.chat.id
         editMessageTextParams.messageId = this.id
         editMessageTextParams.init()
-        sender.send(editMessageTextParams, successCallback)
+        sender.sendMessageAsync(editMessageTextParams, successCallback)
     }
 
     fun Message.editMessageAsInline(text: Text, inlineMessageId: MessageId, init: EditMessageTextParams.() -> Unit) {
@@ -278,7 +281,7 @@ open class CommonBotContext(val botName: String) {
         val editMessageTextParams = EditMessageTextParams(text)
         editMessageTextParams.inlineMessageId = inlineMessageId
         editMessageTextParams.init()
-        sender.send(editMessageTextParams, successCallback)
+        sender.sendMessageAsync(editMessageTextParams, successCallback)
     }
 
     fun Message.forwardTo(chatId: ChatId, disableNotification: Boolean = false, successCallback: (Message) -> Unit = {}) {
@@ -286,12 +289,13 @@ open class CommonBotContext(val botName: String) {
     }
 
     fun forwardMessage(chatId: ChatId, fromChatId: ChatId, messageId: MessageId, disableNotification: Boolean = false, successCallback: (Message) -> Unit = {}) {
-        sender.send(ForwardMessageParams(chatId, fromChatId, messageId, disableNotification), successCallback)
+        sender.sendMessageAsync(ForwardMessageParams(chatId, fromChatId, messageId, disableNotification), successCallback)
     }
 
     fun editMessageReplyMarkup(init: EditMessageReplyMarkupParams.() -> Unit, successCallback: (Message) -> Unit = {}) {
         val params = EditMessageReplyMarkupParams()
-        sender.send(params, successCallback)
+        params.init()
+        sender.sendMessageAsync(params, successCallback)
     }
 
     fun Message.editMessageReplyMarkup(init: EditMessageReplyMarkupParams.() -> Unit) {
@@ -303,8 +307,14 @@ open class CommonBotContext(val botName: String) {
         params.chatId = this.chat.id
         params.messageId = this.id
         params.init()
-        sender.send(params, successCallback)
+        sender.sendMessageAsync(params, successCallback)
     }
+
+    fun ChatId.getChat(callback: (Chat) -> Unit) {
+        receiver.getChat(GetChatParams(this), callback)
+    }
+
+    fun ChatId.getChat() : Chat = receiver.getChat(GetChatParams(this))
 
     fun HasEditableReplyMarkup<in InlineKeyboardMarkup>.inlineKeyboard(init: InlineKeyboardMarkup.() -> Unit) {
         replyMarkup = InlineKeyboardMarkup(this).apply(init)
