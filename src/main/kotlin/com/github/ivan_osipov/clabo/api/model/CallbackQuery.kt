@@ -10,14 +10,14 @@ class CallbackQuery: Identifiable() {
     @SerializedName("from")
     lateinit var from: User
 
-    @SerializedName("chat_instance")
-    lateinit var chatInstance: String
-
     @SerializedName("message")
     var message: Message? = null
 
     @SerializedName("inline_message_id")
     var inlineMessageId: String? = null
+
+    @SerializedName("chat_instance")
+    lateinit var chatInstance: String
 
     @SerializedName("data")
     var data: String? = null
