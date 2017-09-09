@@ -48,14 +48,6 @@ internal class TelegramApiInteraction(private val baseUrl: String) : IncomingInt
         invokeGetAsync(Queries.GET_CHAT, params.toListOfPairs(), ChatDto.deserializer, callback)
     }
 
-    override fun sendMessageSync(sendParams: SendParams): Message {
-        return invokePostMethodSync(Queries.SEND_MESSAGE, sendParams.toListOfPairs(), MessageDto.deserializer)
-    }
-
-    override fun sendMessageAsync(sendParams: SendParams, callback: (Message) -> Unit) {
-        invokePostMethodAsync(Queries.SEND_MESSAGE, sendParams.toListOfPairs(), MessageDto.deserializer, callback)
-    }
-
     private fun <T : Any> invokePostMethodAsync(method: String,
                                                 params: List<Pair<String, *>>? = null,
                                                 deserializer: ResponseDeserializable<ResponseDto<T>>,

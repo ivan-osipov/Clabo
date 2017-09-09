@@ -7,7 +7,8 @@ import com.github.ivan_osipov.clabo.api.model.ReplyMarkup
 import com.github.ivan_osipov.clabo.utils.ChatId
 import com.google.gson.annotations.SerializedName
 
-class SendParams() : SyncByChatsOutputParams, HasEditableReplyMarkup<ReplyMarkup> {
+class SendParams() : OutputParams, SyncByChatsOutputParams, HasEditableReplyMarkup<ReplyMarkup> {
+    override val queryId: String = Queries.SEND_MESSAGE
 
     constructor(chatId: String, text: String) : this() {
         this.chatId = chatId
