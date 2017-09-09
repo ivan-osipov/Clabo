@@ -20,7 +20,7 @@ class InlineKeyboardButton(
     var switchInlineQueryCurrentChat: String? = null
 
     @SerializedName("callback_game")
-    var callbackGame: Any? = null //todo CallbackGame
+    var callbackGame: CallbackGame? = null
 
     @SerializedName("pay")
     var pay: Boolean = false

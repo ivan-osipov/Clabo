@@ -2,7 +2,7 @@ package com.github.ivan_osipov.clabo.api.model
 
 import com.google.gson.annotations.SerializedName
 
-open class AbstractFile : Identifiable() {
+open class AbstractFileDescriptor : Identifiable() {
 
     @SerializedName("file_id")
     override lateinit var id: String

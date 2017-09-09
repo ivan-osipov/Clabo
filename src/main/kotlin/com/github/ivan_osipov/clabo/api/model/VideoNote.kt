@@ -2,7 +2,7 @@ package com.github.ivan_osipov.clabo.api.model
 
 import com.google.gson.annotations.SerializedName
 
-class VideoNote : AbstractFile() {
+class VideoNote : AbstractFileDescriptor() {
 
     @SerializedName("length")
     private var _length: Int? = null

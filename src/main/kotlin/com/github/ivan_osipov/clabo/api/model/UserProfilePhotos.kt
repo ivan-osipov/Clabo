@@ -11,6 +11,6 @@ class UserProfilePhotos {
         get() = _totalCount!!
 
     @SerializedName("photos")
-    lateinit var photos: List<List<PhotoSize>>
+    var photos: List<List<PhotoSize>> = ArrayList()
 
 }

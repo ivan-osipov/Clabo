@@ -2,7 +2,7 @@ package com.github.ivan_osipov.clabo.api.model
 
 import com.google.gson.annotations.SerializedName
 
-class Voice : AbstractFile() {
+class Voice : AbstractFileDescriptor() {
 
     @SerializedName("duration")
     private var _duration: Int? = null

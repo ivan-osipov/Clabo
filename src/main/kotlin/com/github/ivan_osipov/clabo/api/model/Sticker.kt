@@ -2,7 +2,7 @@ package com.github.ivan_osipov.clabo.api.model
 
 import com.google.gson.annotations.SerializedName
 
-class Sticker : AbstractFile() {
+class Sticker : AbstractFileDescriptor() {
 
     @SerializedName("width")
     private var _width: Int? = null

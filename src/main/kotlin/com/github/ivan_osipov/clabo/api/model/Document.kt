@@ -2,7 +2,7 @@ package com.github.ivan_osipov.clabo.api.model
 
 import com.google.gson.annotations.SerializedName
 
-class Document : AbstractFile() {
+class Document : AbstractFileDescriptor() {
 
     @SerializedName("thumb")
     var thumb: PhotoSize? = null

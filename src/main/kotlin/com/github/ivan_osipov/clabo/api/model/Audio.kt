@@ -2,10 +2,7 @@ package com.github.ivan_osipov.clabo.api.model
 
 import com.google.gson.annotations.SerializedName
 
-class Audio : Identifiable() {
-
-    @SerializedName("file_id")
-    override lateinit var id: String
+class Audio : AbstractFileDescriptor() {
 
     @SerializedName("duration")
     private var _duration: Int? = null
@@ -21,8 +18,5 @@ class Audio : Identifiable() {
 
     @SerializedName("mime_type")
     var mimeType: String? = null
-
-    @SerializedName("file_size")
-    var fileSize: Int? = null
 
 }
