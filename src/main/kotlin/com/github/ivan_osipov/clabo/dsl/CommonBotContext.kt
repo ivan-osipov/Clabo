@@ -179,7 +179,7 @@ open class CommonBotContext(val botName: String) {
         this.switchInlineQueryCurrentChat = switchInlineQueryCurrentChat
     }
 
-    fun InlineKeyboardMarkup.callbackGameButton(text: Text, callbackGame: Any) //todo CallbackGame
+    fun InlineKeyboardMarkup.callbackGameButton(text: Text, callbackGame: CallbackGame)
             = abstractButton(text) {
         this.callbackGame = callbackGame
     }
