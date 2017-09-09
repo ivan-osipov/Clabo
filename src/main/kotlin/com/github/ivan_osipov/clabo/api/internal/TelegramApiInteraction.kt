@@ -9,6 +9,7 @@ import com.github.kittinunf.fuel.core.Response
 import com.github.kittinunf.fuel.core.ResponseDeserializable
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPost
+import com.github.kittinunf.fuel.httpUpload
 import com.github.kittinunf.result.Result
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -38,6 +39,40 @@ internal class TelegramApiInteraction(private val baseUrl: String) : IncomingInt
 
     override fun sendMessageAsync(outputParams: OutputParams, successCallback: (Message) -> Unit) {
         invokePostMethodAsync(outputParams.queryId, outputParams.toListOfPairs(), MessageDto.deserializer, successCallback)
+    }
+
+    override fun uploadPhotoSync(photoParams: SendPhotoParams): Message {
+        val (_, _, result) = method(photoParams.queryId).httpUpload(parameters = photoParams.toListOfPairs())
+                .source { _,_ -> photoParams.photoFile!! }
+                .name { "photo" }
+                .responseObject(MessageDto.deserializer)
+        try {
+            processResult(result) { processedResult ->
+                //inline
+                return processedResult
+            }
+        } catch (e: RequestAfterException) {
+            Thread.sleep(e.timeoutInMillis)
+            return uploadPhotoSync(photoParams)
+        }
+        //unreachable code in a normal case
+        Thread.sleep(1000)
+        return uploadPhotoSync(photoParams)
+    }
+
+    override fun uploadPhotoAsync(photoParams: SendPhotoParams, successCallback: (Message) -> Unit) {
+        val invokeCallback: (Request, Response, Result<MessageDto, FuelError>) -> Unit = { _, _, result ->
+            try {
+                processResult(result, successCallback)
+            } catch (e: RequestAfterException) {
+                Thread.sleep(e.timeoutInMillis)
+                uploadPhotoAsync(photoParams, successCallback)
+            }
+        }
+        method(photoParams.queryId).httpUpload(parameters = photoParams.toListOfPairs())
+                .source { _,_ -> photoParams.photoFile!! }
+                .name { "photo" }
+                .responseObject(MessageDto.deserializer, invokeCallback)
     }
 
     override fun getChat(params: GetChatParams): Chat {

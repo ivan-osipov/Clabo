@@ -13,6 +13,7 @@ import com.github.ivan_osipov.clabo.state.chat.ChatContext
 import com.github.ivan_osipov.clabo.state.chat.ChatInteractionContext
 import com.github.ivan_osipov.clabo.state.chat.ChatStateStore
 import com.github.ivan_osipov.clabo.utils.ChatId
+import com.github.ivan_osipov.clabo.utils.FilePointer
 import com.github.ivan_osipov.clabo.utils.MessageId
 import com.github.ivan_osipov.clabo.utils.Text
 import com.google.common.base.Joiner
@@ -110,6 +111,39 @@ open class CommonBotContext(val botName: String) {
         sender.sendMessageAsync(sendParams, successCallback)
     }
 
+    fun sendPhoto(chatId: ChatId,
+                  photoPointer: FilePointer,
+                  init: SendPhotoParams.() -> Unit = {},
+                  successCallback: (Message) -> Unit = {}) {
+        val sendPhotoParams = SendPhotoParams(chatId, photoPointer)
+        sendPhotoParams.init()
+        sender.sendMessageAsync(sendPhotoParams, successCallback)
+    }
+
+    fun sendPhoto(chatId: ChatId,
+                  photoFile: java.io.File,
+                  init: SendPhotoParams.() -> Unit = {},
+                  successCallback: (Message) -> Unit = {}) {
+        val sendPhotoParams = SendPhotoParams(chatId, photoFile = photoFile)
+        sendPhotoParams.init()
+        sender.uploadPhotoAsync(sendPhotoParams, successCallback)
+    }
+
+    fun sendPhotoSync(chatId: ChatId, filePointer: FilePointer? = null,
+                      init: SendPhotoParams.() -> Unit = {}): Message {
+        val sendPhotoParams = SendPhotoParams(chatId, filePointer)
+        sendPhotoParams.init()
+        return sender.sendMessageSync(sendPhotoParams)
+    }
+
+    fun sendPhotoSync(chatId: ChatId,
+                      photoFile: java.io.File,
+                      init: SendPhotoParams.() -> Unit = {}): Message {
+        val sendPhotoParams = SendPhotoParams(chatId, photoFile = photoFile)
+        sendPhotoParams.init()
+        return sender.uploadPhotoSync(sendPhotoParams)
+    }
+
     fun onStartReply(text: Text, init: SendParams.() -> Unit) {
         onStart {
             it.update.message.reply(text, init)
@@ -159,13 +193,13 @@ open class CommonBotContext(val botName: String) {
                                     callbackQueryProcessor: ((CallbackQuery, Update) -> Unit)? = null)
             = abstractButton(text) {
         this.callbackData = callbackData
-        if(callbackQueryProcessor != null) {
+        if (callbackQueryProcessor != null) {
             callbackDataContext.register(callbackData, callbackQueryProcessor)
         }
     }
 
     fun InlineKeyboardMarkup.urlButton(text: Text,
-                                    url: String)
+                                       url: String)
             = abstractButton(text) {
         this.url = url
     }
@@ -326,13 +360,13 @@ open class CommonBotContext(val botName: String) {
         receiver.getChat(GetChatParams(this), callback)
     }
 
-    fun ChatId.getChat() : Chat = receiver.getChat(GetChatParams(this))
+    fun ChatId.getChat(): Chat = receiver.getChat(GetChatParams(this))
 
     fun HasEditableReplyMarkup<in InlineKeyboardMarkup>.inlineKeyboard(init: InlineKeyboardMarkup.() -> Unit) {
         replyMarkup = InlineKeyboardMarkup(this).apply(init)
     }
 
-    fun <T: ReplyMarkup> HasEditableReplyMarkup<T>.emptyReplyMarkup() {
+    fun <T : ReplyMarkup> HasEditableReplyMarkup<T>.emptyReplyMarkup() {
         replyMarkup = null
     }
 

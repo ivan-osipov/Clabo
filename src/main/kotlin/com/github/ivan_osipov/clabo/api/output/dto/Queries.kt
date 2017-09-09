@@ -22,4 +22,6 @@ object Queries {
 
     val GET_CHAT: String = "getChat"
 
+    val SEND_PHOTO: String = "sendPhoto"
+
 }
