@@ -1,6 +1,7 @@
 package com.github.ivan_osipov.clabo.api.model
 
 import com.github.ivan_osipov.clabo.api.exceptions.IncorrectApiUsage
+import com.github.ivan_osipov.clabo.utils.MessageId
 import com.google.gson.annotations.SerializedName
 
 /**
@@ -8,7 +9,7 @@ import com.google.gson.annotations.SerializedName
  */
 open class Message : Identifiable() {
     @SerializedName("message_id")
-    override lateinit var id: String
+    override lateinit var id: MessageId
 
     @SerializedName("from")
     var from: User? = null

@@ -273,13 +273,25 @@ open class CommonBotContext(val botName: String) {
         sender.sendMessageAsync(editMessageTextParams, successCallback)
     }
 
-    fun Message.editMessageAsInline(text: Text, inlineMessageId: MessageId, init: EditMessageTextParams.() -> Unit) {
-        editMessageAsInline(text, inlineMessageId, init, {})
+    fun Message.editMessageCaptionAtChat(init: EditMessageCaptionParams.() -> Unit) {
+        val params = EditMessageCaptionParams(chatId = chat.id, messageId = id)
+        params.init()
+        sender.sendMessageAsync(params)
     }
 
-    fun Message.editMessageAsInline(text: Text, inlineMessageId: MessageId, init: EditMessageTextParams.() -> Unit, successCallback: (Message) -> Unit) {
+    fun Message.editMessageCaptionAsInline(init: EditMessageCaptionParams.() -> Unit) {
+        val params = EditMessageCaptionParams(inlineMessageId = id)
+        params.init()
+        sender.sendMessageAsync(params)
+    }
+
+    fun Message.editMessageAsInline(text: Text, init: EditMessageTextParams.() -> Unit) {
+        editMessageAsInline(text, init, {})
+    }
+
+    fun Message.editMessageAsInline(text: Text, init: EditMessageTextParams.() -> Unit, successCallback: (Message) -> Unit) {
         val editMessageTextParams = EditMessageTextParams(text)
-        editMessageTextParams.inlineMessageId = inlineMessageId
+        editMessageTextParams.inlineMessageId = this.id
         editMessageTextParams.init()
         sender.sendMessageAsync(editMessageTextParams, successCallback)
     }

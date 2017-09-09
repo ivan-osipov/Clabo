@@ -21,7 +21,6 @@ class EditMessageTextParams(val text: String) : OutputParams, HasEditableInlineK
 
     override var replyMarkup: InlineKeyboardMarkup? = null
 
-
     override val queryId: String
         get() = Queries.EDIT_MESSAGE_TEXT
 
