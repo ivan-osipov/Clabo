@@ -41,10 +41,10 @@ internal class TelegramApiInteraction(private val baseUrl: String) : IncomingInt
         invokePostMethodAsync(outputParams.queryId, outputParams.toListOfPairs(), MessageDto.deserializer, successCallback)
     }
 
-    override fun uploadPhotoSync(photoParams: SendPhotoParams): Message {
-        val (_, _, result) = method(photoParams.queryId).httpUpload(parameters = photoParams.toListOfPairs())
-                .source { _,_ -> photoParams.photoFile!! }
-                .name { "photo" }
+    override fun uploadFileSync(fileParams: SendFileParams): Message {
+        val (_, _, result) = method(fileParams.queryId).httpUpload(parameters = fileParams.toListOfPairs())
+                .source { _,_ -> fileParams.file!! }
+                .name { fileParams.fileType }
                 .responseObject(MessageDto.deserializer)
         try {
             processResult(result) { processedResult ->
@@ -53,25 +53,25 @@ internal class TelegramApiInteraction(private val baseUrl: String) : IncomingInt
             }
         } catch (e: RequestAfterException) {
             Thread.sleep(e.timeoutInMillis)
-            return uploadPhotoSync(photoParams)
+            return uploadFileSync(fileParams)
         }
         //unreachable code in a normal case
         Thread.sleep(1000)
-        return uploadPhotoSync(photoParams)
+        return uploadFileSync(fileParams)
     }
 
-    override fun uploadPhotoAsync(photoParams: SendPhotoParams, successCallback: (Message) -> Unit) {
+    override fun uploadFileAsync(fileParams: SendFileParams, successCallback: (Message) -> Unit) {
         val invokeCallback: (Request, Response, Result<MessageDto, FuelError>) -> Unit = { _, _, result ->
             try {
                 processResult(result, successCallback)
             } catch (e: RequestAfterException) {
                 Thread.sleep(e.timeoutInMillis)
-                uploadPhotoAsync(photoParams, successCallback)
+                uploadFileAsync(fileParams, successCallback)
             }
         }
-        method(photoParams.queryId).httpUpload(parameters = photoParams.toListOfPairs())
-                .source { _,_ -> photoParams.photoFile!! }
-                .name { "photo" }
+        method(fileParams.queryId).httpUpload(parameters = fileParams.toListOfPairs())
+                .source { _,_ -> fileParams.file!! }
+                .name { fileParams.fileType }
                 .responseObject(MessageDto.deserializer, invokeCallback)
     }
 

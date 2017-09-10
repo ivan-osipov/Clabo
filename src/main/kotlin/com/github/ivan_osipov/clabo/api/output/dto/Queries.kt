@@ -24,4 +24,6 @@ object Queries {
 
     val SEND_PHOTO: String = "sendPhoto"
 
+    val SEND_AUDIO: String = "sendAudio"
+
 }
