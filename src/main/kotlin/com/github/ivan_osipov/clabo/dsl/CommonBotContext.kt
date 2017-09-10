@@ -111,39 +111,78 @@ open class CommonBotContext(val botName: String) {
         sender.sendMessageAsync(sendParams, successCallback)
     }
 
+    //region sendDocument
+
+    fun sendDocument(chatId: ChatId,
+                     filePointer: FilePointer,
+                     init: SendDocumentParams.() -> Unit = {},
+                     successCallback: (Message) -> Unit = {}) {
+        val params = SendDocumentParams(chatId, filePointer)
+        params.init()
+        sender.sendMessageAsync(params, successCallback)
+    }
+
+    fun sendDocument(chatId: ChatId,
+                     file: java.io.File,
+                     init: SendDocumentParams.() -> Unit = {},
+                     successCallback: (Message) -> Unit = {}) {
+        val params = SendDocumentParams(chatId, file = file)
+        params.init()
+        sender.uploadFileAsync(params, successCallback)
+    }
+
+    fun sendDocumentSync(chatId: ChatId,
+                         filePointer: FilePointer? = null,
+                         init: SendDocumentParams.() -> Unit = {}): Message {
+        val params = SendDocumentParams(chatId, filePointer)
+        params.init()
+        return sender.sendMessageSync(params)
+    }
+
+    fun sendDocumentSync(chatId: ChatId,
+                         file: java.io.File,
+                         init: SendDocumentParams.() -> Unit = {}): Message {
+        val params = SendDocumentParams(chatId, file = file)
+        params.init()
+        return sender.uploadFileSync(params)
+    }
+
+    //endregion
+
     //region sendPhoto
 
     fun sendPhoto(chatId: ChatId,
-                  photoPointer: FilePointer,
+                  filePointer: FilePointer,
                   init: SendPhotoParams.() -> Unit = {},
                   successCallback: (Message) -> Unit = {}) {
-        val sendPhotoParams = SendPhotoParams(chatId, photoPointer)
-        sendPhotoParams.init()
-        sender.sendMessageAsync(sendPhotoParams, successCallback)
+        val params = SendPhotoParams(chatId, filePointer)
+        params.init()
+        sender.sendMessageAsync(params, successCallback)
     }
 
     fun sendPhoto(chatId: ChatId,
-                  photoFile: java.io.File,
+                  file: java.io.File,
                   init: SendPhotoParams.() -> Unit = {},
                   successCallback: (Message) -> Unit = {}) {
-        val sendPhotoParams = SendPhotoParams(chatId, photoFile = photoFile)
-        sendPhotoParams.init()
-        sender.uploadFileAsync(sendPhotoParams, successCallback)
-    }
-
-    fun sendPhotoSync(chatId: ChatId, filePointer: FilePointer? = null,
-                      init: SendPhotoParams.() -> Unit = {}): Message {
-        val sendPhotoParams = SendPhotoParams(chatId, filePointer)
-        sendPhotoParams.init()
-        return sender.sendMessageSync(sendPhotoParams)
+        val params = SendPhotoParams(chatId, file = file)
+        params.init()
+        sender.uploadFileAsync(params, successCallback)
     }
 
     fun sendPhotoSync(chatId: ChatId,
-                      photoFile: java.io.File,
+                      filePointer: FilePointer? = null,
                       init: SendPhotoParams.() -> Unit = {}): Message {
-        val sendPhotoParams = SendPhotoParams(chatId, photoFile = photoFile)
-        sendPhotoParams.init()
-        return sender.uploadFileSync(sendPhotoParams)
+        val params = SendPhotoParams(chatId, filePointer)
+        params.init()
+        return sender.sendMessageSync(params)
+    }
+
+    fun sendPhotoSync(chatId: ChatId,
+                      file: java.io.File,
+                      init: SendPhotoParams.() -> Unit = {}): Message {
+        val params = SendPhotoParams(chatId, file = file)
+        params.init()
+        return sender.uploadFileSync(params)
     }
 
     //endregion
@@ -163,7 +202,7 @@ open class CommonBotContext(val botName: String) {
                   file: java.io.File,
                   init: SendAudioParams.() -> Unit = {},
                   successCallback: (Message) -> Unit = {}) {
-        val params = SendAudioParams(chatId, photoFile = file)
+        val params = SendAudioParams(chatId, file = file)
         params.init()
         sender.uploadFileAsync(params, successCallback)
     }
@@ -179,7 +218,7 @@ open class CommonBotContext(val botName: String) {
     fun sendAudioSync(chatId: ChatId,
                       file: java.io.File,
                       init: SendAudioParams.() -> Unit = {}): Message {
-        val params = SendAudioParams(chatId, photoFile = file)
+        val params = SendAudioParams(chatId, file = file)
         params.init()
         return sender.uploadFileSync(params)
     }

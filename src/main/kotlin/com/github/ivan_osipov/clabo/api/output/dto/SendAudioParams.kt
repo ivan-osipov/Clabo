@@ -5,8 +5,8 @@ import com.github.ivan_osipov.clabo.utils.FilePointer
 import java.io.File
 
 class SendAudioParams(chatId: ChatId,
-                      photo: FilePointer? = null,
-                      photoFile: File? = null) : SendFileParams(chatId, photo, photoFile) {
+                      filePointer: FilePointer? = null,
+                      file: File? = null) : SendFileParams(chatId, filePointer, file) {
 
     override val queryId: String = Queries.SEND_AUDIO
 

@@ -9,7 +9,7 @@ import com.github.ivan_osipov.clabo.utils.MessageId
 import java.io.File
 
 abstract class SendFileParams(override val chatId: ChatId,
-                              val filePoiner: FilePointer? = null,
+                              val filePointer: FilePointer? = null,
                               val file: File? = null) : OutputParams, HasEditableReplyMarkup<ReplyMarkup> {
 
     abstract val fileType: String
@@ -28,7 +28,7 @@ abstract class SendFileParams(override val chatId: ChatId,
                 "disable_notification" to disableNotification,
                 "reply_to_message_id" to replyToMessageId
         )
-        filePoiner?.let { paramsList.add(fileType to it) }
+        filePointer?.let { paramsList.add(fileType to it) }
         replyMarkup?.let { paramsList.add("reply_markup" to it.toJson()) }
         caption?.let { paramsList.add("caption" to caption) }
 

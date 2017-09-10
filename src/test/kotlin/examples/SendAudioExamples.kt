@@ -22,7 +22,7 @@ object SendAudioFileByUrl {
     fun main(args: Array<String>) {
         bot(testProperties) longPolling {
             onStart {
-                sendAudio(it.message.chat.id, "http://www.sample-videos.com/audio/mp3/crowd-cheering.mp3")
+                sendAudio(it.message.chat.id, "https://github.com/ivan-osipov/Clabo/blob/master/src/test/resources/examples/test.mp3?raw=true")
             }
         }
     }

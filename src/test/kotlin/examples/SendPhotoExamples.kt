@@ -23,7 +23,7 @@ object SendPhotoAsyncByUrl {
     fun main(args: Array<String>) {
         bot(testProperties) longPolling {
             onStart {
-                sendPhoto(it.message.chat.id, "https://cdn.pixabay.com/photo/2015/10/18/18/07/android-994910_960_720.jpg")
+                sendPhoto(it.message.chat.id, "https://github.com/ivan-osipov/Clabo/blob/master/src/test/resources/examples/test.png?raw=true")
             }
         }
     }

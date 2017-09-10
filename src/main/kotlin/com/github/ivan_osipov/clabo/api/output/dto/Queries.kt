@@ -26,4 +26,6 @@ object Queries {
 
     val SEND_AUDIO: String = "sendAudio"
 
+    val SEND_DOCUMENT: String = "sendDocument"
+
 }
