@@ -7,7 +7,7 @@ object SendLocalDocumentAsyncExample {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        val file = File(Main::class.java.getResource("test.txt").file)
+        val file = File(Main::class.java.getResource("test_doc").file)
 
         bot(testProperties) longPolling {
             onStart {
