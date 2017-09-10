@@ -28,8 +28,7 @@ The easiest sample of bot that you can implement below. You should change 'apiKe
 fun main(args: Array<String>) {
     bot("apiKey") longPolling {
         onStart { command ->
-            val message = command.update.message!!
-            message answer "Hi, ${message.from}"
+            command.message answer "Hi, ${command.message.from}"
         }
     }
 }
