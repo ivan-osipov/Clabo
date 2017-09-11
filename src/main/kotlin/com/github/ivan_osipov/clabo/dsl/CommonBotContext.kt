@@ -19,6 +19,7 @@ import com.github.ivan_osipov.clabo.utils.Text
 import com.google.common.base.Joiner
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.util.concurrent.atomic.AtomicBoolean
 
 open class CommonBotContext(val botName: String) {
 
@@ -38,6 +39,8 @@ open class CommonBotContext(val botName: String) {
 
     var chatInteractionContext: ChatInteractionContext<*, *>? = null
 
+    val stop = AtomicBoolean(false)
+
     private val logger: Logger = LoggerFactory.getLogger(CommonBotContext::class.java)
 
     fun <T : ChatStateStore<C>, C : ChatContext> chatting(chatStateStore: T,
@@ -47,6 +50,10 @@ open class CommonBotContext(val botName: String) {
 
     fun configure(init: BotConfig.() -> Unit) {
         configContext.init()
+    }
+
+    fun stop() {
+        stop.set(true)
     }
 
     fun helloMessage(text: Text, init: SendParams.() -> Unit = {}) {

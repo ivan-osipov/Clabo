@@ -1,5 +1,5 @@
 package com.github.ivan_osipov.clabo.dsl
 
 interface Interaction {
-    fun run(context: CommonBotContext)
+    fun run(context: CommonBotContext) : BotResults
 }

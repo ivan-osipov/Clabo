@@ -5,6 +5,7 @@ import com.github.ivan_osipov.clabo.api.model.Message
 import com.github.ivan_osipov.clabo.dsl.CommonBotContext
 import com.github.ivan_osipov.clabo.dsl.perks.command.Command
 import com.github.ivan_osipov.clabo.api.model.Update
+import com.github.ivan_osipov.clabo.dsl.BotResults
 import com.github.ivan_osipov.clabo.state.chat.ChatContext
 import com.github.ivan_osipov.clabo.state.chat.ChatStateStore
 import com.github.ivan_osipov.clabo.utils.isCommand
@@ -16,8 +17,9 @@ internal class ContextProcessor(val commonBotContext: CommonBotContext, private 
     private var lastUpdateId: Long = 0
     private val logger: Logger = LoggerFactory.getLogger(ContextProcessor::class.java)
 
-    fun run() {
-        while (true) {
+    fun run() : BotResults {
+        var botResults = BotResults()
+        while (!commonBotContext.stop.get()) {
             try {
                 val updateParams = api.defaultUpdatesParams.copy()
 
@@ -32,10 +34,13 @@ internal class ContextProcessor(val commonBotContext: CommonBotContext, private 
                 processExecutionBatch(executionBatch)
             } catch (e: Exception) {
                 logger.error("Getting updates error", e)
+                commonBotContext.stop.set(true)
+                botResults = BotResults(e)
             } finally {
                 Thread.sleep(1)
             }
         }
+        return botResults
     }
 
     private fun collectExecutionBatch(updates: List<Update>): ExecutionBatch {
@@ -119,6 +124,7 @@ internal class ContextProcessor(val commonBotContext: CommonBotContext, private 
     private fun processExecutionBatch(executionBatch: ExecutionBatch) {
         for (callback in executionBatch.callbacks) {
             callback()
+            if(commonBotContext.stop.get()) break
         }
     }
 

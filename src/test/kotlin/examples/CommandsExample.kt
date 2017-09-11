@@ -3,7 +3,7 @@ package examples
 import com.github.ivan_osipov.clabo.dsl.bot
 
 fun main(args: Array<String>) {
-    bot(testProperties) longPolling {
+    bot(exampleProperties) longPolling {
 
         configure {
             helloMessage("Hello! I'm Bot based on commands. Write '/'")

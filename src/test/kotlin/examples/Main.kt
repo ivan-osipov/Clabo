@@ -4,4 +4,4 @@ import com.github.ivan_osipov.clabo.dsl.props
 
 class Main
 
-val testProperties = props(Main::class, "bot.properties")
+val exampleProperties = props(Main::class, "bot.properties")

@@ -169,6 +169,9 @@ internal class TelegramApiInteraction(private val baseUrl: String) : IncomingInt
                 }
             } else {
                 processError(error)
+                if(error.response.httpStatusCode == 500) {
+                    throw error
+                }
             }
         }
     }

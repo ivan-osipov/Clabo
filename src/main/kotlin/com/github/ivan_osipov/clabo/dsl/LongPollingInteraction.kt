@@ -5,22 +5,18 @@ import com.github.ivan_osipov.clabo.dsl.internal.contextProcessing.ContextProces
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class LongPollingInteraction(private val telegramApiUrl: String): Interaction {
+class LongPollingInteraction(private val telegramApiUrl: String) : Interaction {
     private val logger: Logger = LoggerFactory.getLogger(LongPollingInteraction::class.java)
 
-    override fun run(context: CommonBotContext) {
+    override fun run(context: CommonBotContext) : BotResults {
         val api = TelegramApiInteraction(telegramApiUrl)
 
         context.sender = api
         context.receiver = api
 
-        api.getMe { me ->
-            val botName = me.username ?: "undefined"
-            logger.info("Long polling bot: ${me.firstName} ($botName) started")
-
-            val contextProcessor = ContextProcessor(context, api)
-            contextProcessor.run()
-        }
+        val contextProcessor = ContextProcessor(context, api)
+        logger.info("Context processing is starting")
+        return contextProcessor.run()
     }
 
 }
