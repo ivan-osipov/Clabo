@@ -13,7 +13,7 @@ import spark.Service
 
 class SystemBotCommandTests {
 
-    @Test
+    @Test(timeout = 5000)
     fun `stop command is working`() {
         Service.ignite().apply {
             port(TEST_SERVER_PORT)
