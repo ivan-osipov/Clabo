@@ -1,4 +1,4 @@
-package com.github.ivan_osipov.clabo.test_dsl
+package com.github.ivan_osipov.clabo.infrastructure.dsl
 
 import java.util.*
 

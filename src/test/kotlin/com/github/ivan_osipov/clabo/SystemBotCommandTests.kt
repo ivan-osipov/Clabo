@@ -1,22 +1,20 @@
 package com.github.ivan_osipov.clabo
 
-import com.github.ivan_osipov.clabo.api.input.ResponseDto
-import com.github.ivan_osipov.clabo.api.input.toJson
-import com.github.ivan_osipov.clabo.dsl.BotResults
 import com.github.ivan_osipov.clabo.dsl.bot
-import com.github.ivan_osipov.clabo.test_dsl.*
-import org.hamcrest.CoreMatchers.nullValue
-import org.hamcrest.Matcher
-import org.junit.Assert.assertThat
-import org.junit.Test
+import com.github.ivan_osipov.clabo.infrastructure.ClaboTest
+import com.github.ivan_osipov.clabo.infrastructure.TelegramServerExtension
+import com.github.ivan_osipov.clabo.infrastructure.UseServer
+import com.github.ivan_osipov.clabo.infrastructure.dsl.*
+import com.github.ivan_osipov.clabo.infrastructure.wrapInResponseDtoJson
+import org.junit.jupiter.api.Test
 import spark.Service
 
+@ClaboTest
+@UseServer(SystemBotCommandTests.TestTelegramServerExtension::class)
 class SystemBotCommandTests {
 
-    @Test(timeout = 5000)
-    fun `stop command is working`() {
-        Service.ignite().apply {
-            port(TEST_SERVER_PORT)
+    class TestTelegramServerExtension : TelegramServerExtension {
+        override fun Service.setup() {
             get("/bot$TEST_API_KEY/getMe") { _, _ ->
                 user {
                     firstName = "testBot"
@@ -33,26 +31,15 @@ class SystemBotCommandTests {
                 ).wrapInResponseDtoJson()
             }
         }
+    }
 
+    @Test
+    fun `stop command is working`() {
         bot(testProperties) longPolling {
             onStart {
                 it.message answer "Hi!"
                 stop()
             }
         } assertThatBotStopReason isNull
-
-    }
-
-    infix fun BotResults.assertThatBotStopReason(matcher: Matcher<in Any?>) {
-        assertThat(stopReason.toString(), stopReason, matcher)
-    }
-
-    val isNull: Matcher<Any?> = nullValue()
-
-    fun <T : Any> T.wrapInResponseDtoJson(): String {
-        return ResponseDto<T>().apply {
-            ok = true
-            result = this@wrapInResponseDtoJson
-        }.toJson()!!
     }
 }
