@@ -71,8 +71,9 @@ internal class ContextProcessor(val commonBotContext: CommonBotContext, private 
                     val chatContext: ChatContext? = chatStateStore?.getChatContext(message.chat.id)
                     chatContext?.let {
                         val messagesProcessors: Collection<(Message, Update) -> Unit> = chatContext
-                                .likeCallbacks.get(message.text?.toLowerCase())
+                                .patternCallbacks.get(message.text?.toLowerCase())
                         val predicateCallbacks = chatContext.predicateCallbacks.asMap()
+                        val messageCallbacks = chatContext.messageCallbacks
 
                         for (messagesProcessor in messagesProcessors) {
                             executionBatch.callbacks.add {
@@ -90,9 +91,16 @@ internal class ContextProcessor(val commonBotContext: CommonBotContext, private 
                                 }
                             }
                         }
+
+                        for (messageCallback in messageCallbacks) {
+                            executionBatch.callbacks.add {
+                                messageCallback(message, update)
+                            }
+                        }
                     }
                 }
             }
+
             val inlineQuery = update.inlineQuery
             if (inlineQuery != null) {
                 inlineModeContext.inlineQueryCallbacks.forEach { callback ->

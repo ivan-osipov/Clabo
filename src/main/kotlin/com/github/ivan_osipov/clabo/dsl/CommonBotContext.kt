@@ -118,6 +118,12 @@ open class CommonBotContext(val botName: String) {
         sender.sendMessageAsync(sendParams, successCallback)
     }
 
+    fun sendSync(text: Text, chatId: ChatId, init: SendParams.() -> Unit = {}) {
+        val sendParams = SendParams(chatId, text)
+        sendParams.init()
+        sender.sendMessageSync(sendParams)
+    }
+
     //region sendDocument
 
     fun sendDocument(chatId: ChatId,
@@ -385,8 +391,16 @@ open class CommonBotContext(val botName: String) {
         sender.sendMessageAsync(DeleteMessageParams(chatId, messageId))
     }
 
+    fun CommonBotContext.deleteMessageSync(chatId: ChatId, messageId: MessageId) {
+        sender.sendMessageSync(DeleteMessageParams(chatId, messageId))
+    }
+
     fun Message.deleteMessage() {
         deleteMessage(this.chat.id, this.id)
+    }
+
+    fun Message.deleteMessageSync() {
+        deleteMessageSync(this.chat.id, this.id)
     }
 
     fun Message.editMessageAtChat(text: Text, init: EditMessageTextParams.() -> Unit) {
