@@ -252,6 +252,12 @@ open class CommonBotContext(val botName: String) {
         sender.sendMessageAsync(sendParams, successCallback)
     }
 
+    fun Message?.replySync(text: Text, init: SendParams.() -> Unit) : Message {
+        val sendParams = SendParams(this!!.chat.id, text)
+        sendParams.init()
+        return sender.sendMessageSync(sendParams)
+    }
+
     fun SendParams.replyKeyboard(init: ReplyKeyboardMarkup.() -> Unit) {
         replyMarkup = ReplyKeyboardMarkup(this).apply(init)
     }
