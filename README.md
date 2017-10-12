@@ -11,8 +11,7 @@ Clabo is DSL (Domain-Specific Language) for [Kotlin](https://kotlinlang.org) whi
 If you use Gradle, you should add the follow config
 ```gradle
 repositories {
-    mavenCentral()
-    jcenter() //for used fuel lib
+    jcenter()
 }
 dependencies {
     compile("org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version", //probably, you have the kotlin stdlib dependency
