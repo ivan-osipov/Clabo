@@ -82,6 +82,7 @@ publishing {
     publications {
         release(MavenPublication) {
             artifact fatJar
+            artifact source: sourcesJar, classifier: 'sources', extension: 'zip'
         }
     }
 }

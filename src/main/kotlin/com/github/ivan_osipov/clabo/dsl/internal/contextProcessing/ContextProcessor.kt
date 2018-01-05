@@ -144,7 +144,9 @@ internal class ContextProcessor(val commonBotContext: CommonBotContext, private 
         val text = update.message!!.text!!
         val parts: List<String> = text.split(" ")
         var name: String = parts[0].toLowerCase()
-        val parameter: String? = if (parts.size > 1) parts[1] else null
+        val parameter: String? = if (parts.size > 1) {
+            (1 until parts.size).joinToString(separator = " ") { parts[it] }
+        } else null
         name = name.substring(1)
         val commandObj = Command(name, parameter, update)
 

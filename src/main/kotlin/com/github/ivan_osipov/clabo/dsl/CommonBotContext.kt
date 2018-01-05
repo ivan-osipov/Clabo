@@ -9,9 +9,7 @@ import com.github.ivan_osipov.clabo.dsl.perks.command.Command
 import com.github.ivan_osipov.clabo.dsl.perks.command.CommandsContext
 import com.github.ivan_osipov.clabo.dsl.perks.inline.InlineModeContext
 import com.github.ivan_osipov.clabo.dsl.perks.inlineKeyboard.CallbackDataContext
-import com.github.ivan_osipov.clabo.state.chat.ChatContext
-import com.github.ivan_osipov.clabo.state.chat.ChatInteractionContext
-import com.github.ivan_osipov.clabo.state.chat.ChatStateStore
+import com.github.ivan_osipov.clabo.state.chat.*
 import com.github.ivan_osipov.clabo.utils.ChatId
 import com.github.ivan_osipov.clabo.utils.FilePointer
 import com.github.ivan_osipov.clabo.utils.MessageId
@@ -42,6 +40,10 @@ open class CommonBotContext(val botName: String) {
     val stop = AtomicBoolean(false)
 
     private val logger: Logger = LoggerFactory.getLogger(CommonBotContext::class.java)
+
+    fun chatting(init: ChatInteractionContext<StoreStub, StaticChatContext>.() -> Unit) {
+        chatting(StoreStub, init)
+    }
 
     fun <T : ChatStateStore<C>, C : ChatContext> chatting(chatStateStore: T,
                                                           init: ChatInteractionContext<T, C>.() -> Unit) {
