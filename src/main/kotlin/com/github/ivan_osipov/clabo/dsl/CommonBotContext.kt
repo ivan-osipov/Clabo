@@ -37,12 +37,18 @@ open class CommonBotContext(val botName: String) {
 
     var chatInteractionContext: ChatInteractionContext<*, *>? = null
 
+    val channelContext = InChannelContext()
+
     val stop = AtomicBoolean(false)
 
     private val logger: Logger = LoggerFactory.getLogger(CommonBotContext::class.java)
 
     fun chatting(init: ChatInteractionContext<StoreStub, StaticChatContext>.() -> Unit) {
         chatting(StoreStub, init)
+    }
+
+    fun channels(init: InChannelContext.() -> Unit) {
+        channelContext.init()
     }
 
     fun <T : ChatStateStore<C>, C : ChatContext> chatting(chatStateStore: T,

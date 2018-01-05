@@ -64,13 +64,24 @@ class Chat: Identifiable() {
     var pinnedMessage: Message? = null
 
     val type: Type
-        get() = Type.valueOf(_type)
+        get() = Type.fromString(_type)
 
-    enum class Type(name: String) {
+    enum class Type(val _type: String) {
         PRIVATE("private"),
         GROUP("group"),
         SUPER_GROUP("supergroup"),
         CHANNEL("channel");
+
+        companion object {
+            fun fromString(text: String): Type {
+                for (type in Type.values()) {
+                    if (type._type.compareTo(text, ignoreCase = true) == 0) {
+                        return type
+                    }
+                }
+                throw IllegalStateException("Value $text cannot be converted to Chat.Type")
+            }
+        }
     }
 
 }

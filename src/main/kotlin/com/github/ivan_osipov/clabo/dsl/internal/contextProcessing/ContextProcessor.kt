@@ -49,6 +49,7 @@ internal class ContextProcessor(val commonBotContext: CommonBotContext, private 
         val chatInteractionContext = commonBotContext.chatInteractionContext
         val chatStateStore: ChatStateStore<*>? = chatInteractionContext?.chatStateStore
         val callbackDataRegister = commonBotContext.callbackDataContext.register
+        val channelContext = commonBotContext.channelContext
 
         val executionBatch = ExecutionBatch()
         for (update in updates) {
@@ -97,6 +98,14 @@ internal class ContextProcessor(val commonBotContext: CommonBotContext, private 
                                 messageCallback(message, update)
                             }
                         }
+                    }
+                }
+            }
+
+            if(update.channelPost != null) {
+                channelContext.channelMessageCallbacks.forEach { callback ->
+                    executionBatch.callbacks.add {
+                        callback(update.channelPost!!, update)
                     }
                 }
             }
