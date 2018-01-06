@@ -5,7 +5,7 @@ def ignoreSigning = true
 
 
 buildscript {
-    ext.kotlin_version = '1.1.4-3'
+    ext.kotlin_version = '1.2.10'
     repositories {
         mavenCentral()
         maven {
@@ -25,6 +25,7 @@ apply plugin: 'signing'
 apply plugin: 'maven'
 apply plugin: "com.dorongold.task-tree"
 apply plugin: 'org.junit.platform.gradle.plugin'
+apply plugin: 'idea'
 
 repositories {
     jcenter()
@@ -51,7 +52,7 @@ dependencies {
             "ch.qos.logback:logback-classic:${versions.logback}",
             "ch.qos.logback:logback-core:${versions.logback}",
             "com.sparkjava:spark-core:${versions.spark}",
-            "org.jetbrains.kotlin:kotlin-reflect",
+            "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version",
             "org.junit.platform:junit-platform-launcher:${versions.junit.platform}",
             "org.junit.jupiter:junit-jupiter-engine:${versions.junit.jupiter}",
             "org.junit.vintage:junit-vintage-engine:${versions.junit.vintage}"
