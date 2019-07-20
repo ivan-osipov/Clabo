@@ -18,7 +18,7 @@ class Bot internal constructor(){
 
     infix fun longPolling(init: CommonBotContext.() -> Unit) = LongPollingInteraction(telegramApiUrl).execute(init)
 
-    infix fun notification(execute: OutgoingInteractionApi.() -> Unit) = execute(TelegramApiInteraction(telegramApiUrl))
+    infix fun notification(init: OutgoingInteractionApi.() -> Unit) = TelegramApiInteraction(telegramApiUrl).init()
 
     private fun Interaction.execute(init: CommonBotContext.() -> Unit) : BotResults {
         val botName = init()
