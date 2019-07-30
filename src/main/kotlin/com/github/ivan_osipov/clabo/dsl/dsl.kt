@@ -1,5 +1,6 @@
 package com.github.ivan_osipov.clabo.dsl
 
+import com.github.ivan_osipov.clabo.api.internal.OutgoingInteractionApi
 import com.github.ivan_osipov.clabo.api.internal.TelegramApiInteraction
 import org.slf4j.LoggerFactory
 import java.io.FileInputStream
@@ -16,6 +17,8 @@ class Bot internal constructor(){
     private val telegramApiUrl: String by lazy { "$host/bot$apiKey/" }
 
     infix fun longPolling(init: CommonBotContext.() -> Unit) = LongPollingInteraction(telegramApiUrl).execute(init)
+
+    infix fun notification(init: OutgoingInteractionApi.() -> Unit) = TelegramApiInteraction(telegramApiUrl).init()
 
     private fun Interaction.execute(init: CommonBotContext.() -> Unit) : BotResults {
         val botName = init()
