@@ -14,7 +14,7 @@ repositories {
     jcenter()
 }
 dependencies {
-    compile("org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version", //probably, you have the kotlin stdlib dependency
+    compile('org.jetbrains.kotlin:kotlin-stdlib-jdk8', //probably, you have the kotlin stdlib dependency
             'com.github.ivan_osipov:clabo:0.0.1', //the clabo dependency
             'ch.qos.logback:logback-classic:1.2.3', //any implementation of logging for slf4j
             'ch.qos.logback:logback-core:1.2.3')
@@ -25,7 +25,7 @@ dependencies {
 The easiest sample of bot that you can implement below. You should change 'apiKey' with your value
 ```kotlin
 fun main(args: Array<String>) {
-    bot("apiKey") longPolling {
+    bot("apiKey") longPooling {
         onStart { command ->
             command.message answer "Hi, ${command.message.from}"
         }
